@@ -1,16 +1,17 @@
 import { connect } from "react-redux";
 import { State } from "../reducers";
-import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { Button, FormGroup, Input, Label } from "reactstrap";
 import * as React from "react";
 import { changeInput, removeProblem, submitProblem } from "../actions";
 import { Dispatch } from "redux";
+import { List } from "immutable";
 
 interface Props {
   change: (input: string) => void;
   submit: (problem: string) => void;
   remove: (n: number) => void;
   input: string;
-  tasks: string[];
+  tasks: List<string>;
 }
 
 const App = (props: Props) => (

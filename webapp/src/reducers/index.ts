@@ -1,28 +1,25 @@
 import { ActionType, BaseAction } from "../common";
 import { combineReducers } from "redux";
+import { List } from "immutable";
 
 export interface Task {
   url: string;
 }
 
 export interface State {
-  tasks: Task[];
+  tasks: List<Task>;
   input: string;
 }
 
-export const taskReducer = (state: Task[] = [], action: BaseAction) => {
+export const taskReducer = (state: List<Task> = List(), action: BaseAction) => {
   switch (action.type) {
     case ActionType.REMOVE_PROBLEM: {
       const n = action.payload;
-      const newState = state.slice();
-      newState.splice(n, 1);
-      return newState;
+      return state.delete(n);
     }
     case ActionType.SUBMIT_PROBLEM: {
       const url = action.payload;
-      const newState = state.slice();
-      newState.push({ url });
-      return newState;
+      return state.push({ url });
     }
     default: {
       return state;
