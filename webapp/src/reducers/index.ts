@@ -5,21 +5,24 @@ import {
   REMOVE_PROBLEM,
   SUBMIT_PROBLEM
 } from "../actions";
-import { combineReducers } from "redux";
 import { List } from "immutable";
 import { AtCoderProblem } from "../api";
+import { combineReducers } from "redux";
 
-export interface Task {
-  url: string;
+export interface PooledTask {
+  readonly url: string;
 }
 
 export interface State {
-  tasks: List<Task>;
+  tasks: List<PooledTask>;
   input: string;
   problems: List<AtCoderProblem>;
 }
 
-export const taskReducer = (state: List<Task> = List(), action: Action) => {
+export const taskReducer = (
+  state: List<PooledTask> = List(),
+  action: Action
+) => {
   switch (action.type) {
     case REMOVE_PROBLEM: {
       const { n } = action;

@@ -1,15 +1,14 @@
-import { takeEvery, all, call, put, fork } from "redux-saga/effects";
-import { fetchAtCoderProblems } from "../api";
-import { FETCH_PROBLEMS, fetchProblems, putProblems } from "../actions";
+import { takeEvery, all, call, put, fork, select } from "redux-saga/effects";
+import * as Api from "../api";
+import * as Actions from "../actions";
+import { getProblems } from "../selectors";
 
 function* requestProblems() {
-  yield takeEvery(FETCH_PROBLEMS, function*(
-    action: ReturnType<typeof fetchProblems>
-  ) {
-    console.log(action);
-    if (action.problems.isEmpty()) {
-      const problems = yield call(fetchAtCoderProblems);
-      yield put(putProblems(problems));
+  yield takeEvery(Actions.FETCH_PROBLEMS, function*() {
+    const currentProblems = yield select(getProblems);
+    if (currentProblems.isEmpty()) {
+      const problems = yield call(Api.fetchAtCoderProblems);
+      yield put(Actions.receiveProblems(problems));
     }
   });
 }

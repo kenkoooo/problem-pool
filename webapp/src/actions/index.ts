@@ -22,19 +22,18 @@ export const changeInput = (input: string) => ({
   input
 });
 
-export const putProblems = (problems: List<AtCoderProblem>) => ({
+export const receiveProblems = (problems: List<AtCoderProblem>) => ({
   type: RECEIVE_PROBLEMS as typeof RECEIVE_PROBLEMS,
   problems
 });
 
-export const fetchProblems = (problems: List<AtCoderProblem>) => ({
-  type: FETCH_PROBLEMS as typeof FETCH_PROBLEMS,
-  problems
+export const requestProblems = () => ({
+  type: FETCH_PROBLEMS as typeof FETCH_PROBLEMS
 });
 
 export type Action =
   | ReturnType<typeof submitProblem>
   | ReturnType<typeof removeProblem>
   | ReturnType<typeof changeInput>
-  | ReturnType<typeof putProblems>
-  | ReturnType<typeof fetchProblems>;
+  | ReturnType<typeof receiveProblems>
+  | ReturnType<typeof requestProblems>;
