@@ -1,16 +1,40 @@
-import { ActionType, BaseAction } from "../common";
+import { List } from "immutable";
+import { AtCoderProblem } from "../api";
 
-export const submitProblem = (problem: string): BaseAction => ({
-  type: ActionType.SUBMIT_PROBLEM,
-  payload: problem
+export const SUBMIT_PROBLEM = "SUBMIT_PROBLEM";
+export const REMOVE_PROBLEM = "REMOVE_PROBLEM";
+export const CHANGE_INPUT = "CHANGE_INPUT";
+export const RECEIVE_PROBLEMS = "RECEIVE_PROBLEMS";
+export const FETCH_PROBLEMS = "FETCH_PROBLEMS";
+
+export const submitProblem = (url: string) => ({
+  type: SUBMIT_PROBLEM as typeof SUBMIT_PROBLEM,
+  url
 });
 
-export const removeProblem = (n: number): BaseAction => ({
-  type: ActionType.REMOVE_PROBLEM,
-  payload: n
+export const removeProblem = (n: number) => ({
+  type: REMOVE_PROBLEM as typeof REMOVE_PROBLEM,
+  n
 });
 
-export const changeInput = (input: string): BaseAction => ({
-  type: ActionType.CHANGE_INPUT,
-  payload: input
+export const changeInput = (input: string) => ({
+  type: CHANGE_INPUT as typeof CHANGE_INPUT,
+  input
 });
+
+export const putProblems = (problems: List<AtCoderProblem>) => ({
+  type: RECEIVE_PROBLEMS as typeof RECEIVE_PROBLEMS,
+  problems
+});
+
+export const fetchProblems = (problems: List<AtCoderProblem>) => ({
+  type: FETCH_PROBLEMS as typeof FETCH_PROBLEMS,
+  problems
+});
+
+export type Action =
+  | ReturnType<typeof submitProblem>
+  | ReturnType<typeof removeProblem>
+  | ReturnType<typeof changeInput>
+  | ReturnType<typeof putProblems>
+  | ReturnType<typeof fetchProblems>;

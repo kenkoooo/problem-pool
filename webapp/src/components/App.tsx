@@ -1,17 +1,25 @@
 import { connect } from "react-redux";
-import { State } from "../reducers";
+import { State, Task } from "../reducers";
 import { Button, FormGroup, Input, Label } from "reactstrap";
 import * as React from "react";
-import { changeInput, removeProblem, submitProblem } from "../actions";
+import {
+  changeInput,
+  fetchProblems,
+  removeProblem,
+  submitProblem
+} from "../actions";
 import { Dispatch } from "redux";
 import { List } from "immutable";
+import { AtCoderProblem } from "../api";
 
 interface Props {
   change: (input: string) => void;
   submit: (problem: string) => void;
   remove: (n: number) => void;
+  fetchProblems: (problems: List<AtCoderProblem>) => void;
   input: string;
-  tasks: List<string>;
+  tasks: List<Task>;
+  problems: List<AtCoderProblem>;
 }
 
 const App = (props: Props) => (
@@ -24,10 +32,17 @@ const App = (props: Props) => (
         value={props.input}
       />
     </FormGroup>
-    <Button onClick={() => props.submit(props.input)}>A</Button>
-    {props.tasks.map((url, index) => (
+    <Button
+      onClick={() => {
+        props.submit(props.input);
+        props.fetchProblems(props.problems);
+      }}
+    >
+      A
+    </Button>
+    {props.tasks.map((task, index) => (
       <div key={index}>
-        {url}
+        {task.url}
         <Button onClick={() => props.remove(index)}>Remove</Button>
       </div>
     ))}
@@ -38,14 +53,17 @@ const mapStateToProps = (state: State) => {
   console.log(state);
   return {
     input: state.input,
-    tasks: state.tasks.map(t => t.url)
+    tasks: state.tasks,
+    problems: state.problems
   };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   change: (input: string) => dispatch(changeInput(input)),
   submit: (problem: string) => dispatch(submitProblem(problem)),
-  remove: (n: number) => dispatch(removeProblem(n))
+  remove: (n: number) => dispatch(removeProblem(n)),
+  fetchProblems: (problems: List<AtCoderProblem>) =>
+    dispatch(fetchProblems(problems))
 });
 
 export default connect(
