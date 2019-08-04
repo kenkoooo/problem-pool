@@ -1,25 +1,21 @@
 import { List } from "immutable";
 import { AtCoderProblem } from "../api";
+import { OnlineJudge, UserIds } from "../common";
 
-export const SUBMIT_PROBLEM = "SUBMIT_PROBLEM";
-export const REMOVE_PROBLEM = "REMOVE_PROBLEM";
-export const CHANGE_INPUT = "CHANGE_INPUT";
+export const SUBMIT_TASK = "SUBMIT_TASK";
+export const REMOVE_TASK = "REMOVE_TASK";
 export const RECEIVE_PROBLEMS = "RECEIVE_PROBLEMS";
 export const FETCH_PROBLEMS = "FETCH_PROBLEMS";
+export const SAVE_USERNAME = "SAVE_USERNAME";
 
-export const submitProblem = (url: string) => ({
-  type: SUBMIT_PROBLEM as typeof SUBMIT_PROBLEM,
+export const submitTask = (url: string) => ({
+  type: SUBMIT_TASK as typeof SUBMIT_TASK,
   url
 });
 
-export const removeProblem = (n: number) => ({
-  type: REMOVE_PROBLEM as typeof REMOVE_PROBLEM,
+export const removeTask = (n: number) => ({
+  type: REMOVE_TASK as typeof REMOVE_TASK,
   n
-});
-
-export const changeInput = (input: string) => ({
-  type: CHANGE_INPUT as typeof CHANGE_INPUT,
-  input
 });
 
 export const receiveProblems = (problems: List<AtCoderProblem>) => ({
@@ -27,13 +23,19 @@ export const receiveProblems = (problems: List<AtCoderProblem>) => ({
   problems
 });
 
-export const requestProblems = () => ({
-  type: FETCH_PROBLEMS as typeof FETCH_PROBLEMS
+export const requestProblems = (judge: OnlineJudge) => ({
+  type: FETCH_PROBLEMS as typeof FETCH_PROBLEMS,
+  judge
+});
+
+export const saveUsername = (userIds: UserIds) => ({
+  type: SAVE_USERNAME as typeof SAVE_USERNAME,
+  userIds
 });
 
 export type Action =
-  | ReturnType<typeof submitProblem>
-  | ReturnType<typeof removeProblem>
-  | ReturnType<typeof changeInput>
+  | ReturnType<typeof submitTask>
+  | ReturnType<typeof removeTask>
   | ReturnType<typeof receiveProblems>
-  | ReturnType<typeof requestProblems>;
+  | ReturnType<typeof requestProblems>
+  | ReturnType<typeof saveUsername>;

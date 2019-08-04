@@ -1,34 +1,25 @@
-import {
-  Action,
-  CHANGE_INPUT,
-  RECEIVE_PROBLEMS,
-  REMOVE_PROBLEM,
-  SUBMIT_PROBLEM
-} from "../actions";
+import { Action, REMOVE_TASK, SAVE_USERNAME, SUBMIT_TASK } from "../actions";
 import { List } from "immutable";
-import { AtCoderProblem } from "../api";
 import { combineReducers } from "redux";
-
-export interface PooledTask {
-  readonly url: string;
-}
-
-export interface State {
-  tasks: List<PooledTask>;
-  input: string;
-  problems: List<AtCoderProblem>;
-}
+import {
+  PooledTask,
+  ProblemPool,
+  State,
+  SubmissionPool,
+  UserIds
+} from "../common";
+import * as LocalStorage from "../common/LocalStorage";
 
 export const taskReducer = (
   state: List<PooledTask> = List(),
   action: Action
 ) => {
   switch (action.type) {
-    case REMOVE_PROBLEM: {
+    case REMOVE_TASK: {
       const { n } = action;
       return state.delete(n);
     }
-    case SUBMIT_PROBLEM: {
+    case SUBMIT_TASK: {
       const { url } = action;
       return state.push({ url });
     }
@@ -38,31 +29,42 @@ export const taskReducer = (
   }
 };
 
-export const inputReducer = (state: string = "", action: Action): string => {
-  switch (action.type) {
-    case CHANGE_INPUT:
-      return action.input;
-    case SUBMIT_PROBLEM:
-      return "";
-    default:
-      return state;
-  }
-};
-
-export const problemsReducer = (
-  state: List<AtCoderProblem> = List(),
+export const userIdsReducer = (
+  state: UserIds = {
+    atcoder: "",
+    codeforces: "",
+    yukicoder: "",
+    aoj: ""
+  },
   action: Action
 ) => {
   switch (action.type) {
-    case RECEIVE_PROBLEMS:
-      return action.problems;
-    default:
+    case SAVE_USERNAME: {
+      LocalStorage.saveUserIds(action.userIds);
+      return action.userIds;
+    }
+    default: {
       return state;
+    }
   }
+};
+
+export const submissionPoolReducer = (
+  state: SubmissionPool = { codeforces: List() },
+  action: Action
+) => {
+  return state;
+};
+export const problemPoolReducer = (
+  state: ProblemPool = { atcoder: List() },
+  action: Action
+) => {
+  return state;
 };
 
 export const reducers = combineReducers<State>({
   tasks: taskReducer,
-  input: inputReducer,
-  problems: problemsReducer
+  userIds: userIdsReducer,
+  submissionPool: submissionPoolReducer,
+  problemPool: problemPoolReducer
 });
