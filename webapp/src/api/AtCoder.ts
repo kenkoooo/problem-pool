@@ -23,7 +23,8 @@ export const fetchAtCoderProblems = () =>
         List(
           problems.map(problem => ({
             url: `https://atcoder.jp/contests/${problem.contest_id}/tasks/${problem.id}`,
-            title: problem.title
+            title: problem.title,
+            judge: "AtCoder"
           }))
         )
     );

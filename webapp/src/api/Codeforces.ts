@@ -53,7 +53,8 @@ export const fetchCodeforcesProblems = () =>
         List(
           payload.result.problems.map(p => ({
             url: `https://codeforces.com/contest/${p.contestId}/problem/${p.index}`,
-            title: p.name
+            title: p.name,
+            judge: "Codeforces"
           }))
         )
     );

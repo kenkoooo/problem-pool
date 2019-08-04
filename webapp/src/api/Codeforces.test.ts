@@ -1,7 +1,7 @@
 import {
   fetchCodeforcesProblems,
   fetchCodeforcesSubmissions
-} from "./codeforces";
+} from "./Codeforces";
 
 test("fetch problems from Codeforces", async () => {
   jest.setTimeout(30 * 1000);

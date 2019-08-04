@@ -2,12 +2,7 @@ import { List, Map } from "immutable";
 import { Problem, Submission } from "../api";
 import { PooledTask } from "./PooledTask";
 
-export enum OnlineJudge {
-  ATCODER = "ATCODER",
-  CODEFORCES = "CODEFORCES",
-  YUKICODER = "YUKICODER",
-  AOJ = "AOJ"
-}
+export type OnlineJudge = "AtCoder" | "Codeforces" | "yukicoder" | "AOJ";
 
 export interface UserIds {
   readonly atcoder: string;

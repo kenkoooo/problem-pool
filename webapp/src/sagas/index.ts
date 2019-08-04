@@ -2,10 +2,10 @@ import { all, call, fork, put, select, takeEvery } from "redux-saga/effects";
 import {
   fetchCodeforcesProblems,
   fetchCodeforcesSubmissions
-} from "../api/codeforces";
+} from "../api/Codeforces";
 import * as Actions from "../actions";
 import { State } from "../common";
-import { fetchAtCoderProblems, fetchAtCoderSubmissions } from "../api/atcoder";
+import { fetchAtCoderProblems, fetchAtCoderSubmissions } from "../api/AtCoder";
 
 function* requestProblems() {
   yield all([

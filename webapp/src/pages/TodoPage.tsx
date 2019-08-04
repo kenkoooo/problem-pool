@@ -1,5 +1,15 @@
 import { connect } from "react-redux";
-import { Button, Card, CardBody, CardTitle, Col, Input, Row } from "reactstrap";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardSubtitle,
+  CardTitle,
+  Col,
+  Input,
+  Row
+} from "reactstrap";
 import * as React from "react";
 import { removeTask, submitTask } from "../actions";
 import { Dispatch } from "redux";
@@ -39,7 +49,7 @@ class TodoPage extends React.Component<Props, LocalState> {
               .toLocaleLowerCase()
               .indexOf(input.toLocaleLowerCase()) !== -1
         )
-        .slice(0, 5)
+        .slice(0, 10)
         .toArray();
       this.setState({ suggestions });
     } else {
@@ -70,11 +80,14 @@ class TodoPage extends React.Component<Props, LocalState> {
           </Col>
         </Row>
         {this.state.suggestions.map(problem => (
-          <Card key={problem.url}>
-            <CardBody>
-              <CardTitle>{problem.title}</CardTitle>
-            </CardBody>
-          </Card>
+          <SuggestionCard
+            key={problem.url}
+            problem={problem}
+            onClick={() => {
+              this.props.submit(problem.url);
+              this.setState({ input: "", suggestions: [] });
+            }}
+          />
         ))}
         {this.props.tasks.map((task, index) => (
           <div key={index}>
@@ -83,6 +96,44 @@ class TodoPage extends React.Component<Props, LocalState> {
           </div>
         ))}
       </div>
+    );
+  }
+}
+
+interface SuggestionCardProps {
+  onClick: () => void;
+  problem: Problem;
+}
+interface SuggestionCardState {
+  hover: boolean;
+}
+
+class SuggestionCard extends React.Component<
+  SuggestionCardProps,
+  SuggestionCardState
+> {
+  constructor(props: SuggestionCardProps) {
+    super(props);
+    this.state = { hover: false };
+  }
+
+  render() {
+    const style = this.state.hover
+      ? { background: "#cccccc", cursor: "pointer" }
+      : {};
+    return (
+      <Card
+        style={style}
+        onClick={this.props.onClick}
+        onMouseOver={() => this.setState({ hover: true })}
+        onMouseLeave={() => this.setState({ hover: false })}
+      >
+        <CardBody>
+          <CardTitle tag="h5">
+            {this.props.problem.title} <Badge>{this.props.problem.judge}</Badge>
+          </CardTitle>
+        </CardBody>
+      </Card>
     );
   }
 }

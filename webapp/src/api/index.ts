@@ -1,3 +1,5 @@
+import { OnlineJudge } from "../common";
+
 export interface Submission {
   readonly url: string;
   readonly userId: string;
@@ -8,4 +10,5 @@ export interface Submission {
 export interface Problem {
   readonly url: string;
   readonly title: string;
+  readonly judge: OnlineJudge;
 }
