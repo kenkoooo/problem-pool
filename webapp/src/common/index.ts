@@ -1,6 +1,6 @@
-import { List } from "immutable";
-import { AtCoderProblem } from "../api";
-import { CodeforcesSubmission } from "../api/codeforces";
+import { List, Map } from "immutable";
+import { Problem, Submission } from "../api";
+import { PooledTask } from "./PooledTask";
 
 export enum OnlineJudge {
   ATCODER = "ATCODER",
@@ -16,21 +16,9 @@ export interface UserIds {
   readonly yukicoder: string;
 }
 
-export interface PooledTask {
-  readonly url: string;
-}
-
 export interface State {
   readonly tasks: List<PooledTask>;
   readonly userIds: UserIds;
-  readonly submissionPool: SubmissionPool;
-  readonly problemPool: ProblemPool;
-}
-
-export interface SubmissionPool {
-  codeforces: List<CodeforcesSubmission>;
-}
-
-export interface ProblemPool {
-  atcoder: List<AtCoderProblem>;
+  readonly submissions: Map<[string, string], Submission>;
+  readonly problems: Map<string, Problem>;
 }

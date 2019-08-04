@@ -1,30 +1,52 @@
 import { connect } from "react-redux";
-import { Button, Col, Input, Row } from "reactstrap";
+import { Button, Card, CardBody, CardTitle, Col, Input, Row } from "reactstrap";
 import * as React from "react";
 import { removeTask, submitTask } from "../actions";
 import { Dispatch } from "redux";
-import { List } from "immutable";
-import { AtCoderProblem } from "../api";
-import { PooledTask, State } from "../common";
+import { List, Map } from "immutable";
+import { Problem } from "../api";
+import { State } from "../common";
+import { PooledTask } from "../common/PooledTask";
 
 interface Props {
   readonly submit: (problem: string) => void;
   readonly remove: (n: number) => void;
   readonly tasks: List<PooledTask>;
-  readonly problems: List<AtCoderProblem>;
+  readonly problems: Map<string, Problem>;
 }
 
 interface LocalState {
   input: string;
+  suggestions: Problem[];
 }
 
 class TodoPage extends React.Component<Props, LocalState> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      input: ""
+      input: "",
+      suggestions: []
     };
   }
+
+  setSuggestions = (input: string) => {
+    if (input.length > 0) {
+      const suggestions = this.props.problems
+        .valueSeq()
+        .filter(
+          problem =>
+            problem.title
+              .toLocaleLowerCase()
+              .indexOf(input.toLocaleLowerCase()) !== -1
+        )
+        .slice(0, 5)
+        .toArray();
+      this.setState({ suggestions });
+    } else {
+      this.setState({ suggestions: [] });
+    }
+  };
+
   render() {
     return (
       <div>
@@ -38,12 +60,22 @@ class TodoPage extends React.Component<Props, LocalState> {
                 }
               }}
               type="text"
-              onChange={e => this.setState({ input: e.target.value })}
+              onChange={e => {
+                const input = e.target.value;
+                this.setState({ input });
+                this.setSuggestions(input);
+              }}
               value={this.state.input}
             />
           </Col>
         </Row>
-
+        {this.state.suggestions.map(problem => (
+          <Card key={problem.url}>
+            <CardBody>
+              <CardTitle>{problem.title}</CardTitle>
+            </CardBody>
+          </Card>
+        ))}
         {this.props.tasks.map((task, index) => (
           <div key={index}>
             {task.url}
@@ -56,7 +88,8 @@ class TodoPage extends React.Component<Props, LocalState> {
 }
 
 const mapStateToProps = (state: State) => ({
-  tasks: state.tasks
+  tasks: state.tasks,
+  problems: state.problems
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

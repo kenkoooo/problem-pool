@@ -88,7 +88,7 @@ class SettingsPage extends React.Component<Props, LocalState> {
               this.props.save({ atcoder, codeforces, yukicoder, aoj })
             }
           >
-            Save
+            {isSaved ? "Saved" : "Save"}
           </Button>
         </Row>
       </div>

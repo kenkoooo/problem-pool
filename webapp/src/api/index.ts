@@ -1,12 +1,11 @@
-import { List } from "immutable";
-
-export interface AtCoderProblem {
-  id: string;
-  contest_id: string;
-  title: string;
+export interface Submission {
+  readonly url: string;
+  readonly userId: string;
+  readonly result: "Accepted" | "Rejected";
+  readonly problemUrl: string;
 }
 
-export const fetchAtCoderProblems = () =>
-  fetch("https://kenkoooo.com/atcoder/resources/problems.json")
-    .then(res => res.json())
-    .then(payload => List(payload as AtCoderProblem[]));
+export interface Problem {
+  readonly url: string;
+  readonly title: string;
+}

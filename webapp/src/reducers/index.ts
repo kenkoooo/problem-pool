@@ -1,19 +1,19 @@
-import { Action, REMOVE_TASK, SAVE_USERNAME, SUBMIT_TASK } from "../actions";
-import { List } from "immutable";
-import { combineReducers } from "redux";
 import {
-  PooledTask,
-  ProblemPool,
-  State,
-  SubmissionPool,
-  UserIds
-} from "../common";
+  Action,
+  RECEIVE_PROBLEMS,
+  RECEIVE_SUBMISSIONS,
+  REMOVE_TASK,
+  SAVE_USERNAME,
+  SUBMIT_TASK
+} from "../actions";
+import { List, Map } from "immutable";
+import { combineReducers } from "redux";
+import { State, UserIds } from "../common";
 import * as LocalStorage from "../common/LocalStorage";
+import { PooledTask } from "../common/PooledTask";
+import { Problem, Submission } from "../api";
 
-export const taskReducer = (
-  state: List<PooledTask> = List(),
-  action: Action
-) => {
+const taskReducer = (state: List<PooledTask> = List(), action: Action) => {
   switch (action.type) {
     case REMOVE_TASK: {
       const { n } = action;
@@ -29,7 +29,7 @@ export const taskReducer = (
   }
 };
 
-export const userIdsReducer = (
+const userIdsReducer = (
   state: UserIds = {
     atcoder: "",
     codeforces: "",
@@ -49,22 +49,43 @@ export const userIdsReducer = (
   }
 };
 
-export const submissionPoolReducer = (
-  state: SubmissionPool = { codeforces: List() },
+const submissionReducer = (
+  state: Map<[string, string], Submission> = Map(),
   action: Action
 ) => {
-  return state;
+  switch (action.type) {
+    case RECEIVE_SUBMISSIONS: {
+      const { submissions } = action;
+      return state.merge(
+        submissions.map(submission => {
+          const { url, userId } = submission;
+          const key: [string, string] = [userId, url];
+          return [key, submission];
+        })
+      );
+    }
+    default:
+      return state;
+  }
 };
-export const problemPoolReducer = (
-  state: ProblemPool = { atcoder: List() },
+const problemReducer = (
+  state: Map<string, Problem> = Map(),
   action: Action
 ) => {
-  return state;
+  switch (action.type) {
+    case RECEIVE_PROBLEMS: {
+      const { problems } = action;
+      return state.merge(problems.map(problem => [problem.url, problem]));
+    }
+    default: {
+      return state;
+    }
+  }
 };
 
 export const reducers = combineReducers<State>({
   tasks: taskReducer,
   userIds: userIdsReducer,
-  submissionPool: submissionPoolReducer,
-  problemPool: problemPoolReducer
+  submissions: submissionReducer,
+  problems: problemReducer
 });
