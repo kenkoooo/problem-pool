@@ -5,7 +5,7 @@ import { Map } from "immutable";
 import { PooledTask } from "../common/PooledTask";
 import { State } from "../common";
 import { removeTask } from "../actions";
-import { Button, Card, CardBody, CardTitle } from "reactstrap";
+import { Button, Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 import { Problem, Submission } from "../api";
 
 interface Props {
@@ -18,12 +18,16 @@ interface Props {
 const TodoCards = (props: Props) => (
   <div>
     {props.tasks.valueSeq().map(task => (
-      <Card key={task.url}>
-        <CardBody>
-          <CardTitle tag="h3">{task.url}</CardTitle>
-          <Button>Solve</Button>
-        </CardBody>
-      </Card>
+      <Row key={task.url}>
+        <Col>
+          <Card>
+            <CardBody>
+              <CardTitle tag="h3">{task.url}</CardTitle>
+              <Button>Solve</Button>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
     ))}
   </div>
 );

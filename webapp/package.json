@@ -45,6 +45,7 @@
     "@types/react-redux": "^7.1.1",
     "@types/react-router-dom": "^4.3.4",
     "@types/reactstrap": "^8.0.1",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "webpack-cli": "^3.3.6"
   }
 }

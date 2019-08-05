@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { Badge, Card, CardBody, CardTitle, Col, Input, Row } from "reactstrap";
+import { Badge, Col, Input, ListGroup, ListGroupItem, Row } from "reactstrap";
 import * as React from "react";
 import { submitTask } from "../actions";
 import { Dispatch } from "redux";
@@ -16,6 +16,7 @@ interface Props {
 interface LocalState {
   input: string;
   suggestions: Problem[];
+  focusing: number;
 }
 
 class TodoPage extends React.Component<Props, LocalState> {
@@ -23,7 +24,8 @@ class TodoPage extends React.Component<Props, LocalState> {
     super(props);
     this.state = {
       input: "",
-      suggestions: []
+      suggestions: [],
+      focusing: -1
     };
   }
 
@@ -39,26 +41,43 @@ class TodoPage extends React.Component<Props, LocalState> {
         )
         .slice(0, 10)
         .toArray();
-      this.setState({ suggestions });
+      this.setState({ suggestions, focusing: -1 });
     } else {
-      this.setState({ suggestions: [] });
+      this.setState({ suggestions: [], focusing: -1 });
     }
   };
 
   submit = (key: string) => {
     this.props.submit(key);
-    this.setState({ input: "", suggestions: [] });
+    this.setState({
+      input: "",
+      suggestions: [],
+      focusing: -1
+    });
   };
 
   render() {
+    const { suggestions, focusing } = this.state;
     return (
       <div>
         <Row>
           <Col>
             <Input
-              onKeyPress={e => {
+              onKeyDown={e => {
                 if (e.key === "Enter") {
-                  this.submit(this.state.input);
+                  if (0 <= focusing && focusing < suggestions.length) {
+                    this.submit(suggestions[focusing].url);
+                  } else {
+                    this.submit(this.state.input);
+                  }
+                } else if (e.key === "ArrowDown") {
+                  this.setState({
+                    focusing: Math.min(focusing + 1, suggestions.length - 1)
+                  });
+                } else if (e.key === "ArrowUp") {
+                  this.setState({
+                    focusing: Math.max(focusing - 1, -1)
+                  });
                 }
               }}
               type="text"
@@ -71,53 +90,24 @@ class TodoPage extends React.Component<Props, LocalState> {
             />
           </Col>
         </Row>
-        {this.state.suggestions.map(problem => (
-          <SuggestionCard
-            key={problem.url}
-            problem={problem}
-            onClick={() => this.submit(problem.url)}
-          />
-        ))}
+        <Row>
+          <Col>
+            <ListGroup>
+              {this.state.suggestions.map((problem, index) => (
+                <ListGroupItem
+                  active={index === focusing}
+                  key={problem.url}
+                  onClick={() => this.submit(problem.url)}
+                  action
+                >
+                  {problem.title} <Badge pill>{problem.judge}</Badge>
+                </ListGroupItem>
+              ))}
+            </ListGroup>
+          </Col>
+        </Row>
         <TodoCards />
       </div>
-    );
-  }
-}
-
-interface SuggestionCardProps {
-  onClick: () => void;
-  problem: Problem;
-}
-interface SuggestionCardState {
-  hover: boolean;
-}
-
-class SuggestionCard extends React.Component<
-  SuggestionCardProps,
-  SuggestionCardState
-> {
-  constructor(props: SuggestionCardProps) {
-    super(props);
-    this.state = { hover: false };
-  }
-
-  render() {
-    const style = this.state.hover
-      ? { background: "#cccccc", cursor: "pointer" }
-      : {};
-    return (
-      <Card
-        style={style}
-        onClick={this.props.onClick}
-        onMouseOver={() => this.setState({ hover: true })}
-        onMouseLeave={() => this.setState({ hover: false })}
-      >
-        <CardBody>
-          <CardTitle tag="h5">
-            {this.props.problem.title} <Badge>{this.props.problem.judge}</Badge>
-          </CardTitle>
-        </CardBody>
-      </Card>
     );
   }
 }
