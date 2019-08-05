@@ -9,7 +9,7 @@ import {
 } from "../actions";
 import { List, Map } from "immutable";
 import { State, UserIds } from "../common";
-import { PooledTask } from "../common/PooledTask";
+import { parseTask, PooledTask } from "../common/PooledTask";
 import { Problem, Submission } from "../api";
 import initialize from "../initialize";
 
@@ -24,7 +24,7 @@ const taskReducer = (
     }
     case SUBMIT_TASK: {
       const { url } = action;
-      return state.set(url, { url });
+      return state.set(url, parseTask(url));
     }
     default: {
       return state;

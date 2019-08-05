@@ -13,10 +13,13 @@ import {
   CardBody,
   CardHeader,
   CardLink,
-  CardSubtitle,
   CardText,
   CardTitle,
   Col,
+  ListGroup,
+  ListGroupItem,
+  ListGroupItemHeading,
+  ListGroupItemText,
   Row
 } from "reactstrap";
 import { Problem, Submission } from "../api";
@@ -31,46 +34,39 @@ interface Props {
 const TodoCards = (props: Props) => (
   <div>
     {props.tasks.valueSeq().map(task => {
-      const problem = props.problems.get(task.url);
+      const problem = task.validUrl
+        ? props.problems.get(task.validUrl)
+        : undefined;
       return (
-        <Row key={task.url}>
+        <Row key={task.key}>
           <Col>
-            <Card>
-              <CardHeader tag="h3">
-                {problem ? <Badge>{problem.judge}</Badge> : null}{" "}
-                {problem ? (
-                  <CardLink href={problem.url} target={"_blank"}>
-                    {problem.title}
-                  </CardLink>
-                ) : (
-                  task.url
-                )}
-              </CardHeader>
-              <CardBody>
-                <CardTitle tag="h3">
-                  {problem ? (
-                    <CardLink href={problem.url} target={"_blank"}>
-                      {problem.title}
-                    </CardLink>
-                  ) : (
-                    task.url
-                  )}
-                </CardTitle>
-                <CardText className="text-right">
-                  <ButtonGroup>
-                    <Button key={"a"} onClick={() => props.remove(task.url)}>
-                      Solve
-                    </Button>
-                    <Button key={"b"} onClick={() => props.remove(task.url)}>
-                      Solve
-                    </Button>
-                    <Button key={"c"} onClick={() => props.remove(task.url)}>
-                      Solve
-                    </Button>
-                  </ButtonGroup>
-                </CardText>
-              </CardBody>
-            </Card>
+            <ListGroup>
+              <ListGroupItem>
+                <ListGroupItemHeading className="d-flex justify-content-between">
+                  {problem ? problem.title : task.key}
+                  <small>s</small>
+                </ListGroupItemHeading>
+                <ButtonGroup className="d-flex justify-content-end">
+                  <Button key="solved" color="success">
+                    Solved
+                  </Button>
+                  <Button key="good">Good</Button>
+                  <Button key="hard" color="warning">
+                    Hard
+                  </Button>
+                  <Button key="failed" color="danger">
+                    Failed
+                  </Button>
+                  <Button
+                    key="remove"
+                    color="dark"
+                    onClick={() => props.remove(task.key)}
+                  >
+                    Remove
+                  </Button>
+                </ButtonGroup>
+              </ListGroupItem>
+            </ListGroup>
           </Col>
         </Row>
       );

@@ -1,9 +1,18 @@
 export interface PooledTask {
-  readonly url: string;
+  readonly key: string;
+  readonly validUrl: string | null;
 }
 
-const parseTask = (input: string) => {
+export const parseTask = (input: string): PooledTask => {
+  const validUrl = isValidUrl(input) ? input : null;
+  return { key: input, validUrl };
+};
+
+const isValidUrl = (url: string): boolean => {
   try {
-    const url = new URL(input);
-  } catch {}
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 };
