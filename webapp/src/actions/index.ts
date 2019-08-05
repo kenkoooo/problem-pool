@@ -14,9 +14,9 @@ export const submitTask = (url: string) => ({
   url
 });
 
-export const removeTask = (n: number) => ({
+export const removeTask = (key: string) => ({
   type: REMOVE_TASK as typeof REMOVE_TASK,
-  n
+  key
 });
 
 export const receiveProblems = (problems: List<Problem>) => ({

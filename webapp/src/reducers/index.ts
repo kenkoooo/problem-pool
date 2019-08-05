@@ -6,22 +6,25 @@ import {
   SAVE_USERNAME,
   SUBMIT_TASK
 } from "../actions";
-import { List, Map } from "immutable";
+import { Map } from "immutable";
 import { combineReducers } from "redux";
 import { State, UserIds } from "../common";
 import * as LocalStorage from "../common/LocalStorage";
 import { PooledTask } from "../common/PooledTask";
 import { Problem, Submission } from "../api";
 
-const taskReducer = (state: List<PooledTask> = List(), action: Action) => {
+const taskReducer = (
+  state: Map<string, PooledTask> = Map(),
+  action: Action
+) => {
   switch (action.type) {
     case REMOVE_TASK: {
-      const { n } = action;
-      return state.delete(n);
+      const { key } = action;
+      return state.remove(key);
     }
     case SUBMIT_TASK: {
       const { url } = action;
-      return state.push({ url });
+      return state.set(url, { url });
     }
     default: {
       return state;
