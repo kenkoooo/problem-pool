@@ -17,3 +17,11 @@ export interface State {
   readonly submissions: Map<string, List<Submission>>;
   readonly problems: Map<string, Problem>;
 }
+
+export const formatDate = (timeSecond: number) => {
+  const d = new Date(timeSecond * 1000);
+  const year = d.getFullYear();
+  const month = ("0" + (d.getMonth() + 1)).slice(-2);
+  const date = ("0" + d.getDate()).slice(-2);
+  return `${year}-${month}-${date}`;
+};

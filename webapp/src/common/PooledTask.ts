@@ -2,8 +2,9 @@ export interface PooledTask {
   readonly key: string;
   readonly validUrl: string | null;
   readonly createdAt: number;
-  readonly reviewAt: number;
-  readonly lastAccepted: number | null;
+  readonly nextReviewTime: number;
+  readonly lastJudgeAccepted: number | null;
+  readonly lastSolvedByUser: number | null;
 }
 
 export const createTask = (input: string): PooledTask => {
@@ -13,8 +14,9 @@ export const createTask = (input: string): PooledTask => {
     key: input,
     validUrl,
     createdAt,
-    reviewAt: createdAt,
-    lastAccepted: null
+    nextReviewTime: createdAt,
+    lastJudgeAccepted: null,
+    lastSolvedByUser: null
   };
 };
 

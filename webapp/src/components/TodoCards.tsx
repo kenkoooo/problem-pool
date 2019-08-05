@@ -4,67 +4,40 @@ import { connect } from "react-redux";
 import { List, Map } from "immutable";
 import { PooledTask } from "../common/PooledTask";
 import { State } from "../common";
-import { removeTask } from "../actions";
-import {
-  Button,
-  ButtonGroup,
-  Col,
-  ListGroup,
-  ListGroupItem,
-  ListGroupItemHeading,
-  Row
-} from "reactstrap";
+import { removeTask, solveTask } from "../actions";
+import { Col, Row } from "reactstrap";
 import { Problem, Submission } from "../api";
+import ModalCard from "./ModalCard";
 
 interface Props {
   tasks: Map<string, PooledTask>;
   submissions: Map<string, List<Submission>>;
   problems: Map<string, Problem>;
   remove: (key: string) => void;
+  solve: (key: string, solvedSecond: number, reviewSecond: number) => void;
 }
-
 const TodoCards = (props: Props) => (
   <div>
     {props.tasks.valueSeq().map(task => {
       const problem = task.validUrl
         ? props.problems.get(task.validUrl)
         : undefined;
+      const { lastJudgeAccepted, lastSolvedByUser, nextReviewTime } = task;
       return (
         <Row key={task.key}>
           <Col>
-            <ListGroup>
-              <ListGroupItem>
-                <ListGroupItemHeading className="d-flex justify-content-between">
-                  {problem ? (
-                    <a href={problem.url} target="_blank">
-                      {problem.title}
-                    </a>
-                  ) : (
-                    task.key
-                  )}
-                  <small>s</small>
-                </ListGroupItemHeading>
-                <ButtonGroup className="d-flex justify-content-end">
-                  <Button key="solved" color="success">
-                    Solved
-                  </Button>
-                  <Button key="good">Good</Button>
-                  <Button key="hard" color="warning">
-                    Hard
-                  </Button>
-                  <Button key="failed" color="danger">
-                    Failed
-                  </Button>
-                  <Button
-                    key="remove"
-                    color="dark"
-                    onClick={() => props.remove(task.key)}
-                  >
-                    Remove
-                  </Button>
-                </ButtonGroup>
-              </ListGroupItem>
-            </ListGroup>
+            <ModalCard
+              taskKey={task.key}
+              url={task.validUrl}
+              title={problem ? problem.title : null}
+              lastJudgeAccepted={lastJudgeAccepted}
+              lastSolvedByUser={lastSolvedByUser}
+              nextReviewTime={nextReviewTime}
+              remove={() => props.remove(task.key)}
+              review={(solvedDate: number, reviewDate: number) =>
+                props.solve(task.key, solvedDate, reviewDate)
+              }
+            />
           </Col>
         </Row>
       );
@@ -78,7 +51,9 @@ const mapStateToProps = (state: State) => ({
   problems: state.problems
 });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  remove: (key: string) => dispatch(removeTask(key))
+  remove: (key: string) => dispatch(removeTask(key)),
+  solve: (key: string, solvedSecond: number, reviewSecond: number) =>
+    dispatch(solveTask(key, solvedSecond, reviewSecond))
 });
 
 export default connect(
