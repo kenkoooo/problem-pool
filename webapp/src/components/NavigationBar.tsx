@@ -28,8 +28,26 @@ const NavigationBar = () => (
           Links
         </DropdownToggle>
         <DropdownMenu right>
-          <DropdownItem href="https://github.com/kenkoooo/problem-pool">
+          <DropdownItem
+            href="https://github.com/kenkoooo/problem-pool"
+            target="_blank"
+          >
             GitHub
+          </DropdownItem>
+          <DropdownItem
+            href="https://onlinejudge.u-aizu.ac.jp/"
+            target="_blank"
+          >
+            AOJ
+          </DropdownItem>
+          <DropdownItem href="https://atcoder.jp/" target="_blank">
+            AtCoder
+          </DropdownItem>
+          <DropdownItem href="https://codeforces.com/" target="_blank">
+            Codeforces
+          </DropdownItem>
+          <DropdownItem href="https://yukicoder.me/" target="_blank">
+            yukicoder
           </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>
