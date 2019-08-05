@@ -5,7 +5,20 @@ import { List, Map } from "immutable";
 import { PooledTask } from "../common/PooledTask";
 import { State } from "../common";
 import { removeTask } from "../actions";
-import { Badge, Button, Card, CardBody, CardTitle, Col, Row } from "reactstrap";
+import {
+  Badge,
+  Button,
+  ButtonGroup,
+  Card,
+  CardBody,
+  CardHeader,
+  CardLink,
+  CardSubtitle,
+  CardText,
+  CardTitle,
+  Col,
+  Row
+} from "reactstrap";
 import { Problem, Submission } from "../api";
 
 interface Props {
@@ -23,12 +36,39 @@ const TodoCards = (props: Props) => (
         <Row key={task.url}>
           <Col>
             <Card>
+              <CardHeader tag="h3">
+                {problem ? <Badge>{problem.judge}</Badge> : null}{" "}
+                {problem ? (
+                  <CardLink href={problem.url} target={"_blank"}>
+                    {problem.title}
+                  </CardLink>
+                ) : (
+                  task.url
+                )}
+              </CardHeader>
               <CardBody>
                 <CardTitle tag="h3">
-                  {problem ? problem.title : task.url}{" "}
-                  {problem ? <Badge>{problem.judge}</Badge> : null}
+                  {problem ? (
+                    <CardLink href={problem.url} target={"_blank"}>
+                      {problem.title}
+                    </CardLink>
+                  ) : (
+                    task.url
+                  )}
                 </CardTitle>
-                <Button onClick={() => props.remove(task.url)}>Solve</Button>
+                <CardText className="text-right">
+                  <ButtonGroup>
+                    <Button key={"a"} onClick={() => props.remove(task.url)}>
+                      Solve
+                    </Button>
+                    <Button key={"b"} onClick={() => props.remove(task.url)}>
+                      Solve
+                    </Button>
+                    <Button key={"c"} onClick={() => props.remove(task.url)}>
+                      Solve
+                    </Button>
+                  </ButtonGroup>
+                </CardText>
               </CardBody>
             </Card>
           </Col>

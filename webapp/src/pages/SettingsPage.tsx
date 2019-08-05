@@ -82,14 +82,18 @@ class SettingsPage extends React.Component<Props, LocalState> {
           </FormGroup>
         </Row>
         <Row>
-          <Button
-            disabled={isSaved}
-            onClick={() =>
-              this.props.save({ atcoder, codeforces, yukicoder, aoj })
-            }
-          >
-            {isSaved ? "Saved" : "Save"}
-          </Button>
+          {isSaved ? (
+            <Button disabled>Saved</Button>
+          ) : (
+            <Button
+              color="danger"
+              onClick={() =>
+                this.props.save({ atcoder, codeforces, yukicoder, aoj })
+              }
+            >
+              Save
+            </Button>
+          )}
         </Row>
       </div>
     );

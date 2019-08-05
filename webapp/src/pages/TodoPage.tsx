@@ -3,14 +3,15 @@ import { Badge, Col, Input, ListGroup, ListGroupItem, Row } from "reactstrap";
 import * as React from "react";
 import { submitTask } from "../actions";
 import { Dispatch } from "redux";
-import { Map } from "immutable";
-import { Problem } from "../api";
+import { List, Map } from "immutable";
+import { Problem, Submission } from "../api";
 import { State } from "../common";
 import TodoCards from "../components/TodoCards";
 
 interface Props {
   readonly submit: (problem: string) => void;
   readonly problems: Map<string, Problem>;
+  readonly submissions: Map<string, List<Submission>>;
 }
 
 interface LocalState {
@@ -58,6 +59,16 @@ class TodoPage extends React.Component<Props, LocalState> {
 
   render() {
     const { suggestions, focusing } = this.state;
+    const { submissions } = this.props;
+    const isAccepted = (problem: Problem) => {
+      const list = submissions.get(problem.url);
+      console.log(list);
+      return (
+        list !== undefined &&
+        list.find(s => s.result === "Accepted") !== undefined
+      );
+    };
+
     return (
       <div>
         <Row>
@@ -95,6 +106,7 @@ class TodoPage extends React.Component<Props, LocalState> {
             <ListGroup>
               {this.state.suggestions.map((problem, index) => (
                 <ListGroupItem
+                  color={isAccepted(problem) ? "success" : undefined}
                   active={index === focusing}
                   key={problem.url}
                   onClick={() => this.submit(problem.url)}
@@ -113,7 +125,8 @@ class TodoPage extends React.Component<Props, LocalState> {
 }
 
 const mapStateToProps = (state: State) => ({
-  problems: state.problems
+  problems: state.problems,
+  submissions: state.submissions
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

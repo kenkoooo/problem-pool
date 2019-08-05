@@ -8,10 +8,10 @@ import {
   SUBMIT_TASK
 } from "../actions";
 import { List, Map } from "immutable";
-import { combineReducers } from "redux";
 import { State, UserIds } from "../common";
 import { PooledTask } from "../common/PooledTask";
 import { Problem, Submission } from "../api";
+import initialize from "../initialize";
 
 const taskReducer = (
   state: Map<string, PooledTask> = Map(),
@@ -62,7 +62,9 @@ const submissionReducer = (
         (a, b) => a.concat(b),
         submissions.reduce(
           (map, submission) =>
-            map.update(submission.url, List(), list => list.push(submission)),
+            map.update(submission.problemUrl, List(), list =>
+              list.push(submission)
+            ),
           Map<string, List<Submission>>()
         )
       );
@@ -89,9 +91,11 @@ const problemReducer = (
   }
 };
 
-export const reducers = combineReducers<State>({
-  tasks: taskReducer,
-  userIds: userIdsReducer,
-  submissions: submissionReducer,
-  problems: problemReducer
+const rootReducer = (state: State = initialize(), action: Action): State => ({
+  tasks: taskReducer(state.tasks, action),
+  userIds: userIdsReducer(state.userIds, action),
+  submissions: submissionReducer(state.submissions, action),
+  problems: problemReducer(state.problems, action)
 });
+
+export default rootReducer;
