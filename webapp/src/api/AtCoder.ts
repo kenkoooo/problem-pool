@@ -7,11 +7,11 @@ export const fetchAtCoderSubmissions = (userId: string) =>
     .then(
       (submissions: AtCoderSubmission[]): List<Submission> =>
         List(
-          submissions.map(s => ({
-            url: `https://atcoder.jp/contests/${s.contest_id}/tasks/${s.problem_id}`,
-            userId: s.user_id,
-            result: s.result === "AC" ? "Accepted" : "Rejected",
-            problemUrl: `https://atcoder.jp/contests/${s.contest_id}/tasks/${s.problem_id}`
+          submissions.map(submission => ({
+            url: `https://atcoder.jp/contests/${submission.contest_id}/submissions/${submission.id}`,
+            userId: submission.user_id,
+            result: submission.result === "AC" ? "Accepted" : "Rejected",
+            problemUrl: `https://atcoder.jp/contests/${submission.contest_id}/tasks/${submission.problem_id}`
           }))
         )
     );

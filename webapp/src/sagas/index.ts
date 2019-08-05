@@ -6,11 +6,18 @@ import {
 import * as Actions from "../actions";
 import { State } from "../common";
 import { fetchAtCoderProblems, fetchAtCoderSubmissions } from "../api/AtCoder";
+import {
+  fetchYukicoderProblems,
+  fetchYukicoderSolvedProblems
+} from "../api/Yukicoder";
+import { fetchAOJProblems, fetchAOJSubmissions } from "../api/AOJ";
 
 function* requestProblems() {
   yield all([
     put(Actions.receiveProblems(yield call(fetchAtCoderProblems))),
-    put(Actions.receiveProblems(yield call(fetchCodeforcesProblems)))
+    put(Actions.receiveProblems(yield call(fetchCodeforcesProblems))),
+    put(Actions.receiveProblems(yield call(fetchYukicoderProblems))),
+    put(Actions.receiveProblems(yield call(fetchAOJProblems)))
   ]);
 }
 
@@ -25,6 +32,17 @@ function* requestSubmissions() {
   }
   if (userIds.atcoder.length > 0) {
     const submissions = yield call(fetchAtCoderSubmissions, userIds.atcoder);
+    yield put(Actions.receiveSubmissions(submissions));
+  }
+  if (userIds.yukicoder.length > 0) {
+    const submissions = yield call(
+      fetchYukicoderSolvedProblems,
+      userIds.yukicoder
+    );
+    yield put(Actions.receiveSubmissions(submissions));
+  }
+  if (userIds.aoj.length > 0) {
+    const submissions = yield call(fetchAOJSubmissions, userIds.aoj);
     yield put(Actions.receiveSubmissions(submissions));
   }
 }
