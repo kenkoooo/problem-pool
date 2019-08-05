@@ -19,3 +19,11 @@ export const loadUserIds = (): UserIds => {
 
 export const saveTasks = (tasks: Map<string, PooledTask>) =>
   localStorage.setItem(TASKS, JSON.stringify(tasks));
+export const loadTasks = (): Map<string, PooledTask> => {
+  const item = localStorage.getItem(TASKS);
+  if (item === null) {
+    return Map<string, PooledTask>();
+  } else {
+    return Map<string, PooledTask>(JSON.parse(item));
+  }
+};

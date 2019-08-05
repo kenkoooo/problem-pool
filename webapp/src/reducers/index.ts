@@ -10,7 +10,6 @@ import {
 import { List, Map } from "immutable";
 import { combineReducers } from "redux";
 import { State, UserIds } from "../common";
-import * as LocalStorage from "../common/LocalStorage";
 import { PooledTask } from "../common/PooledTask";
 import { Problem, Submission } from "../api";
 
@@ -25,8 +24,7 @@ const taskReducer = (
     }
     case SUBMIT_TASK: {
       const { url } = action;
-      const newState = state.set(url, { url });
-      return newState;
+      return state.set(url, { url });
     }
     default: {
       return state;
@@ -45,7 +43,6 @@ const userIdsReducer = (
 ) => {
   switch (action.type) {
     case SAVE_USERNAME: {
-      LocalStorage.saveUserIds(action.userIds);
       return action.userIds;
     }
     default: {
