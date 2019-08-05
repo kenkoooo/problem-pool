@@ -22,6 +22,7 @@ function* requestProblems() {
 }
 
 function* requestSubmissions() {
+  yield put(Actions.clearSubmissions());
   const userIds = yield select((state: State) => state.userIds);
   if (userIds.codeforces.length > 0) {
     const submissions = yield call(

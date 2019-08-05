@@ -8,6 +8,7 @@ export const RECEIVE_PROBLEMS = "RECEIVE_PROBLEMS";
 export const SAVE_USERNAME = "SAVE_USERNAME";
 export const REQUEST_SUBMISSIONS = "REQUEST_SUBMISSIONS";
 export const RECEIVE_SUBMISSIONS = "RECEIVE_SUBMISSIONS";
+export const CLEAR_SUBMISSIONS = "CLEAR_SUBMISSIONS";
 
 export const submitTask = (url: string) => ({
   type: SUBMIT_TASK as typeof SUBMIT_TASK,
@@ -40,10 +41,15 @@ export const receiveSubmissions = (submissions: List<Submission>) => ({
   submissions
 });
 
+export const clearSubmissions = () => ({
+  type: CLEAR_SUBMISSIONS as typeof CLEAR_SUBMISSIONS
+});
+
 export type Action =
   | ReturnType<typeof submitTask>
   | ReturnType<typeof removeTask>
   | ReturnType<typeof receiveProblems>
   | ReturnType<typeof saveUsername>
   | ReturnType<typeof receiveSubmissions>
-  | ReturnType<typeof requestSubmissions>;
+  | ReturnType<typeof requestSubmissions>
+  | ReturnType<typeof clearSubmissions>;

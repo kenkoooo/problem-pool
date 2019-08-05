@@ -1,34 +1,40 @@
 import * as React from "react";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
-import { Map } from "immutable";
+import { List, Map } from "immutable";
 import { PooledTask } from "../common/PooledTask";
 import { State } from "../common";
 import { removeTask } from "../actions";
-import { Button, Card, CardBody, CardTitle, Col, Row } from "reactstrap";
+import { Badge, Button, Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 import { Problem, Submission } from "../api";
 
 interface Props {
   tasks: Map<string, PooledTask>;
-  submissions: Map<[string, string], Submission>;
+  submissions: Map<string, List<Submission>>;
   problems: Map<string, Problem>;
   remove: (key: string) => void;
 }
 
 const TodoCards = (props: Props) => (
   <div>
-    {props.tasks.valueSeq().map(task => (
-      <Row key={task.url}>
-        <Col>
-          <Card>
-            <CardBody>
-              <CardTitle tag="h3">{task.url}</CardTitle>
-              <Button>Solve</Button>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    ))}
+    {props.tasks.valueSeq().map(task => {
+      const problem = props.problems.get(task.url);
+      return (
+        <Row key={task.url}>
+          <Col>
+            <Card>
+              <CardBody>
+                <CardTitle tag="h3">
+                  {problem ? problem.title : task.url}{" "}
+                  {problem ? <Badge>{problem.judge}</Badge> : null}
+                </CardTitle>
+                <Button onClick={() => props.remove(task.url)}>Solve</Button>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      );
+    })}
   </div>
 );
 

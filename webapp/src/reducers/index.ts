@@ -1,12 +1,13 @@
 import {
   Action,
+  CLEAR_SUBMISSIONS,
   RECEIVE_PROBLEMS,
   RECEIVE_SUBMISSIONS,
   REMOVE_TASK,
   SAVE_USERNAME,
   SUBMIT_TASK
 } from "../actions";
-import { Map } from "immutable";
+import { List, Map } from "immutable";
 import { combineReducers } from "redux";
 import { State, UserIds } from "../common";
 import * as LocalStorage from "../common/LocalStorage";
@@ -24,7 +25,8 @@ const taskReducer = (
     }
     case SUBMIT_TASK: {
       const { url } = action;
-      return state.set(url, { url });
+      const newState = state.set(url, { url });
+      return newState;
     }
     default: {
       return state;
@@ -53,19 +55,23 @@ const userIdsReducer = (
 };
 
 const submissionReducer = (
-  state: Map<[string, string], Submission> = Map(),
+  state: Map<string, List<Submission>> = Map(),
   action: Action
 ) => {
   switch (action.type) {
     case RECEIVE_SUBMISSIONS: {
       const { submissions } = action;
-      return state.merge(
-        submissions.map(submission => {
-          const { url, userId } = submission;
-          const key: [string, string] = [userId, url];
-          return [key, submission];
-        })
+      return state.mergeWith(
+        (a, b) => a.concat(b),
+        submissions.reduce(
+          (map, submission) =>
+            map.update(submission.url, List(), list => list.push(submission)),
+          Map<string, List<Submission>>()
+        )
       );
+    }
+    case CLEAR_SUBMISSIONS: {
+      return state.clear();
     }
     default:
       return state;

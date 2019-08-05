@@ -1,4 +1,4 @@
-import { Map } from "immutable";
+import { List, Map } from "immutable";
 import { Problem, Submission } from "../api";
 import { PooledTask } from "./PooledTask";
 
@@ -14,6 +14,6 @@ export interface UserIds {
 export interface State {
   readonly tasks: Map<string, PooledTask>;
   readonly userIds: UserIds;
-  readonly submissions: Map<[string, string], Submission>;
+  readonly submissions: Map<string, List<Submission>>;
   readonly problems: Map<string, Problem>;
 }
