@@ -86,7 +86,8 @@ function* saveTasks() {
   yield takeLatest(
     (action: Actions.Action) =>
       action.type === Actions.SUBMIT_TASK ||
-      action.type === Actions.REMOVE_TASK,
+      action.type === Actions.REMOVE_TASK ||
+      action.type === Actions.SOLVE_TASK,
     function*() {
       const tasks = yield select((state: State) => state.tasks);
       yield call(LocalStorage.saveTasks, tasks);

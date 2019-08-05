@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  Badge,
   Button,
   ButtonGroup,
   FormGroup,
@@ -14,7 +15,7 @@ import {
   ModalHeader,
   Table
 } from "reactstrap";
-import { formatDate } from "../common";
+import { formatDate, OnlineJudge } from "../common";
 import { getReviewDuration, ReviewResult } from "../common/Reviewer";
 
 interface Props {
@@ -24,13 +25,13 @@ interface Props {
   lastJudgeAccepted: number | null;
   lastSolvedByUser: number | null;
   nextReviewTime: number;
+  judge: OnlineJudge | null;
   remove: () => void;
   review: (solvedDate: number, reviewDate: number) => void;
 }
 
 interface LocalState {
   isModalOpen: boolean;
-
   modalSolvedDate: string | null;
   modalReviewDate: string | null;
   modalType: ReviewResult | "Remove";
@@ -71,7 +72,8 @@ class ModalCard extends React.Component<Props, LocalState> {
       taskKey,
       lastJudgeAccepted,
       lastSolvedByUser,
-      nextReviewTime
+      nextReviewTime,
+      judge
     } = this.props;
     const durationSeconds =
       modalType !== "Remove"
@@ -83,14 +85,18 @@ class ModalCard extends React.Component<Props, LocalState> {
       modalReviewDate !== null
         ? modalReviewDate
         : formatDate(nowSecond + durationSeconds);
+    const outDated = formatDate(nowSecond) >= formatDate(nextReviewTime);
     return (
       <ListGroup>
         <ListGroupItem>
           <ListGroupItemHeading>
-            {url ? (
-              <a href={url} target="_blank">
-                {title}
-              </a>
+            {title && url && judge ? (
+              <div>
+                <Badge>{judge}</Badge>{" "}
+                <a href={url} target="_blank">
+                  {title}
+                </a>
+              </div>
             ) : (
               taskKey
             )}
@@ -100,7 +106,13 @@ class ModalCard extends React.Component<Props, LocalState> {
               {
                 <tr>
                   <th scope="row">Next review</th>
-                  <td>{formatDate(nextReviewTime)}</td>
+                  {outDated ? (
+                    <td style={{ color: "red" }}>
+                      <strong> {formatDate(nextReviewTime)}</strong>
+                    </td>
+                  ) : (
+                    <td>{formatDate(nextReviewTime)}</td>
+                  )}
                 </tr>
               }
               {lastSolvedByUser !== null ? (

@@ -18,30 +18,34 @@ interface Props {
 }
 const TodoCards = (props: Props) => (
   <div>
-    {props.tasks.valueSeq().map(task => {
-      const problem = task.validUrl
-        ? props.problems.get(task.validUrl)
-        : undefined;
-      const { lastJudgeAccepted, lastSolvedByUser, nextReviewTime } = task;
-      return (
-        <Row key={task.key}>
-          <Col>
-            <ModalCard
-              taskKey={task.key}
-              url={task.validUrl}
-              title={problem ? problem.title : null}
-              lastJudgeAccepted={lastJudgeAccepted}
-              lastSolvedByUser={lastSolvedByUser}
-              nextReviewTime={nextReviewTime}
-              remove={() => props.remove(task.key)}
-              review={(solvedDate: number, reviewDate: number) =>
-                props.solve(task.key, solvedDate, reviewDate)
-              }
-            />
-          </Col>
-        </Row>
-      );
-    })}
+    {props.tasks
+      .valueSeq()
+      .sort((a, b) => a.nextReviewTime - b.nextReviewTime)
+      .map(task => {
+        const problem = task.validUrl
+          ? props.problems.get(task.validUrl)
+          : undefined;
+        const { lastJudgeAccepted, lastSolvedByUser, nextReviewTime } = task;
+        return (
+          <Row key={task.key}>
+            <Col>
+              <ModalCard
+                taskKey={task.key}
+                url={task.validUrl}
+                title={problem ? problem.title : null}
+                lastJudgeAccepted={lastJudgeAccepted}
+                lastSolvedByUser={lastSolvedByUser}
+                nextReviewTime={nextReviewTime}
+                remove={() => props.remove(task.key)}
+                review={(solvedDate: number, reviewDate: number) =>
+                  props.solve(task.key, solvedDate, reviewDate)
+                }
+                judge={problem ? problem.judge : null}
+              />
+            </Col>
+          </Row>
+        );
+      })}
   </div>
 );
 
