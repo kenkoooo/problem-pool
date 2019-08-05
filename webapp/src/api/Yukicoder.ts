@@ -29,7 +29,8 @@ export const fetchYukicoderSolvedProblems = (userId: string) =>
             url: `https://yukicoder.me/problems/no/${problem.No}`,
             userId: userId,
             result: "Accepted",
-            problemUrl: `https://yukicoder.me/problems/no/${problem.No}`
+            problemUrl: `https://yukicoder.me/problems/no/${problem.No}`,
+            creationTimeSecond: null
           }))
         )
     );

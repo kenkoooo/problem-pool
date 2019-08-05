@@ -6,20 +6,12 @@ import { PooledTask } from "../common/PooledTask";
 import { State } from "../common";
 import { removeTask } from "../actions";
 import {
-  Badge,
   Button,
   ButtonGroup,
-  Card,
-  CardBody,
-  CardHeader,
-  CardLink,
-  CardText,
-  CardTitle,
   Col,
   ListGroup,
   ListGroupItem,
   ListGroupItemHeading,
-  ListGroupItemText,
   Row
 } from "reactstrap";
 import { Problem, Submission } from "../api";
@@ -43,7 +35,13 @@ const TodoCards = (props: Props) => (
             <ListGroup>
               <ListGroupItem>
                 <ListGroupItemHeading className="d-flex justify-content-between">
-                  {problem ? problem.title : task.key}
+                  {problem ? (
+                    <a href={problem.url} target="_blank">
+                      {problem.title}
+                    </a>
+                  ) : (
+                    task.key
+                  )}
                   <small>s</small>
                 </ListGroupItemHeading>
                 <ButtonGroup className="d-flex justify-content-end">

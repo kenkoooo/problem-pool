@@ -9,7 +9,7 @@ import {
 } from "../actions";
 import { List, Map } from "immutable";
 import { State, UserIds } from "../common";
-import { parseTask, PooledTask } from "../common/PooledTask";
+import { createTask, PooledTask } from "../common/PooledTask";
 import { Problem, Submission } from "../api";
 import initialize from "../initialize";
 
@@ -24,7 +24,7 @@ const taskReducer = (
     }
     case SUBMIT_TASK: {
       const { url } = action;
-      return state.set(url, parseTask(url));
+      return state.set(url, createTask(url));
     }
     default: {
       return state;
@@ -76,7 +76,8 @@ const submissionReducer = (
       return state;
   }
 };
-const problemReducer = (
+
+const problemsReducer = (
   state: Map<string, Problem> = Map(),
   action: Action
 ) => {
@@ -91,11 +92,35 @@ const problemReducer = (
   }
 };
 
-const rootReducer = (state: State = initialize(), action: Action): State => ({
-  tasks: taskReducer(state.tasks, action),
-  userIds: userIdsReducer(state.userIds, action),
-  submissions: submissionReducer(state.submissions, action),
-  problems: problemReducer(state.problems, action)
-});
+const refineTask = (
+  task: PooledTask,
+  submissions: Map<string, List<Submission>>
+) => {
+  if (task.validUrl === null) {
+    return task;
+  }
+  const list = submissions.get(task.validUrl);
+  if (list === undefined) {
+    return task;
+  }
+  const lastAccepted = list
+    .filter(s => s.result === "Accepted" && s.creationTimeSecond !== null)
+    .map(s => s.creationTimeSecond)
+    .max();
+  if (lastAccepted) {
+    return { ...task, lastAccepted };
+  } else {
+    return task;
+  }
+};
+
+const rootReducer = (state: State = initialize(), action: Action): State => {
+  const userIds = userIdsReducer(state.userIds, action);
+  const submissions = submissionReducer(state.submissions, action);
+  const problems = problemsReducer(state.problems, action);
+  const tasks = taskReducer(state.tasks, action);
+  const refinedTask = tasks.map(task => refineTask(task, submissions));
+  return { tasks: refinedTask, userIds, submissions, problems };
+};
 
 export default rootReducer;

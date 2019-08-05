@@ -1,11 +1,21 @@
 export interface PooledTask {
   readonly key: string;
   readonly validUrl: string | null;
+  readonly createdAt: number;
+  readonly reviewAt: number;
+  readonly lastAccepted: number | null;
 }
 
-export const parseTask = (input: string): PooledTask => {
+export const createTask = (input: string): PooledTask => {
   const validUrl = isValidUrl(input) ? input : null;
-  return { key: input, validUrl };
+  const createdAt = Date.now() / 1000;
+  return {
+    key: input,
+    validUrl,
+    createdAt,
+    reviewAt: createdAt,
+    lastAccepted: null
+  };
 };
 
 const isValidUrl = (url: string): boolean => {
