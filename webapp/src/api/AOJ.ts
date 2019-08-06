@@ -14,7 +14,7 @@ export const fetchAOJProblems = (page: number = 0, size: number = 10000) =>
         List(
           problems.map(problem => ({
             url: `https://onlinejudge.u-aizu.ac.jp/problems/${problem.id}`,
-            title: problem.name,
+            title: `${problem.id}: ${problem.name}`,
             judge: "AOJ"
           }))
         )
