@@ -16,7 +16,7 @@ import {
   Table
 } from "reactstrap";
 import { formatDate, OnlineJudge } from "../common";
-import { getReviewDuration, ReviewResult } from "../common/Reviewer";
+import { ReviewResult, suggestNextReviewTime } from "../common/Reviewer";
 
 interface Props {
   taskKey: string;
@@ -75,16 +75,16 @@ class ModalCard extends React.Component<Props, LocalState> {
       nextReviewTime,
       judge
     } = this.props;
-    const durationSeconds =
+    const nextReviewSuggestion =
       modalType !== "Remove"
-        ? getReviewDuration(lastSolvedByUser, modalType)
+        ? suggestNextReviewTime(lastSolvedByUser, modalType)
         : -1;
     const solvedDate =
       modalSolvedDate !== null ? modalSolvedDate : formatDate(nowSecond);
     const reviewDate =
       modalReviewDate !== null
         ? modalReviewDate
-        : formatDate(nowSecond + durationSeconds);
+        : formatDate(nextReviewSuggestion);
     const outDated = formatDate(nowSecond) >= formatDate(nextReviewTime);
     return (
       <ListGroup>

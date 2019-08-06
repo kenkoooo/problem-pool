@@ -12,7 +12,7 @@ import { List, Map } from "immutable";
 import { State, UserIds } from "../common";
 import { createTask, PooledTask } from "../common/PooledTask";
 import { Problem, Submission } from "../api";
-import initialize from "../initialize";
+import * as LocalStorage from "../common/LocalStorage";
 
 const taskReducer = (
   state: Map<string, PooledTask> = Map(),
@@ -92,7 +92,7 @@ const submissionReducer = (
   }
 };
 
-const problemsReducer = (
+const problemReducer = (
   state: Map<string, Problem> = Map(),
   action: Action
 ) => {
@@ -129,11 +129,18 @@ const refineTask = (
   }
 };
 
+const initialize = (): State => ({
+  tasks: LocalStorage.loadTasks(),
+  userIds: LocalStorage.loadUserIds(),
+  submissions: Map(),
+  problems: Map()
+});
+
 const rootReducer = (state: State = initialize(), action: Action): State => {
   console.log(action);
   const userIds = userIdsReducer(state.userIds, action);
   const submissions = submissionReducer(state.submissions, action);
-  const problems = problemsReducer(state.problems, action);
+  const problems = problemReducer(state.problems, action);
   const tasks = taskReducer(state.tasks, action);
   const refinedTasks = tasks.map(task => refineTask(task, submissions));
   return { tasks: refinedTasks, userIds, submissions, problems };

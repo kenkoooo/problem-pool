@@ -2,23 +2,22 @@ export type ReviewResult = "Solved" | "Good" | "Hard" | "Failed";
 
 const daysToSeconds = (days: number) => days * 24 * 3600;
 
-export const getReviewDuration = (
+export const suggestNextReviewTime = (
   lastSolvedTimeSecond: number | null,
   reviewResult: ReviewResult
 ) => {
-  const currentTime = Date.now();
-  const span = lastSolvedTimeSecond
-    ? currentTime / 1000 - lastSolvedTimeSecond
+  const currentSecond = Date.now() / 1000;
+  const duration = lastSolvedTimeSecond
+    ? currentSecond - lastSolvedTimeSecond
     : 0;
-  const duration = Math.max(span, daysToSeconds(1));
   switch (reviewResult) {
     case "Solved":
-      return Math.max(duration * 2, daysToSeconds(4));
+      return Math.max(duration * 2, daysToSeconds(4)) + currentSecond;
     case "Good":
-      return Math.max(duration, daysToSeconds(4));
+      return Math.max(duration, daysToSeconds(4)) + currentSecond;
     case "Hard":
-      return Math.max(duration / 2, daysToSeconds(4));
+      return Math.max(duration / 2, daysToSeconds(4)) + currentSecond;
     case "Failed":
-      return daysToSeconds(4);
+      return daysToSeconds(4) + currentSecond;
   }
 };
