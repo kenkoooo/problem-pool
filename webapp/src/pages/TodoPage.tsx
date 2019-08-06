@@ -31,15 +31,23 @@ class TodoPage extends React.Component<Props, LocalState> {
   }
 
   setSuggestions = (input: string) => {
-    if (input.length > 0) {
+    const words = input
+      .toLocaleLowerCase()
+      .split(" ")
+      .filter(word => word.length > 0);
+    if (words.length > 0) {
       const suggestions = this.props.problems
         .valueSeq()
-        .filter(
-          problem =>
-            problem.title
-              .toLocaleLowerCase()
-              .indexOf(input.toLocaleLowerCase()) !== -1
-        )
+        .filter(problem => {
+          const index = (
+            problem.title +
+            " " +
+            problem.url +
+            " " +
+            problem.judge
+          ).toLocaleLowerCase();
+          return words.every(word => index.indexOf(word) !== -1);
+        })
         .slice(0, 10)
         .toArray();
       this.setState({ suggestions, focusing: -1 });
