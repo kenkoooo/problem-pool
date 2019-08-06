@@ -11,7 +11,7 @@ export const fetchYukicoderProblems = () =>
         List(
           problems.map(problem => ({
             url: `https://yukicoder.me/problems/no/${problem.No}`,
-            title: problem.Title,
+            title: `No.${problem.No} ${problem.Title}`,
             judge: "yukicoder"
           }))
         )

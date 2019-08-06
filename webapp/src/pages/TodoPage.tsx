@@ -39,7 +39,13 @@ class TodoPage extends React.Component<Props, LocalState> {
       const suggestions = this.props.problems
         .valueSeq()
         .filter(problem => {
-          const index = (problem.title + " " + problem.url).toLocaleLowerCase();
+          const index = (
+            problem.title +
+            " " +
+            problem.url +
+            " " +
+            problem.judge
+          ).toLocaleLowerCase();
           return words.every(word => index.indexOf(word) !== -1);
         })
         .slice(0, 10)
