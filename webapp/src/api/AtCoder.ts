@@ -11,7 +11,8 @@ export const fetchAtCoderSubmissions = (userId: string) =>
             url: `https://atcoder.jp/contests/${submission.contest_id}/submissions/${submission.id}`,
             userId: submission.user_id,
             result: submission.result === "AC" ? "Accepted" : "Rejected",
-            problemUrl: `https://atcoder.jp/contests/${submission.contest_id}/tasks/${submission.problem_id}`
+            problemUrl: `https://atcoder.jp/contests/${submission.contest_id}/tasks/${submission.problem_id}`,
+            creationTimeSecond: submission.epoch_second
           }))
         )
     );

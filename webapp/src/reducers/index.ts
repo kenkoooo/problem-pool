@@ -5,11 +5,12 @@ import {
   RECEIVE_SUBMISSIONS,
   REMOVE_TASK,
   SAVE_USERNAME,
+  SOLVE_TASK,
   SUBMIT_TASK
 } from "../actions";
 import { List, Map } from "immutable";
 import { State, UserIds } from "../common";
-import { PooledTask } from "../common/PooledTask";
+import { createTask, PooledTask } from "../common/PooledTask";
 import { Problem, Submission } from "../api";
 import initialize from "../initialize";
 
@@ -24,7 +25,21 @@ const taskReducer = (
     }
     case SUBMIT_TASK: {
       const { url } = action;
-      return state.set(url, { url });
+      return state.set(url, createTask(url));
+    }
+    case SOLVE_TASK: {
+      const { key, solvedSecond, reviewSecond } = action;
+      const oldTask = state.get(key);
+      if (oldTask) {
+        const newTask = {
+          ...oldTask,
+          lastSolvedByUser: solvedSecond,
+          nextReviewTime: reviewSecond
+        };
+        return state.set(key, newTask);
+      } else {
+        return state;
+      }
     }
     default: {
       return state;
@@ -76,7 +91,8 @@ const submissionReducer = (
       return state;
   }
 };
-const problemReducer = (
+
+const problemsReducer = (
   state: Map<string, Problem> = Map(),
   action: Action
 ) => {
@@ -91,11 +107,36 @@ const problemReducer = (
   }
 };
 
-const rootReducer = (state: State = initialize(), action: Action): State => ({
-  tasks: taskReducer(state.tasks, action),
-  userIds: userIdsReducer(state.userIds, action),
-  submissions: submissionReducer(state.submissions, action),
-  problems: problemReducer(state.problems, action)
-});
+const refineTask = (
+  task: PooledTask,
+  submissions: Map<string, List<Submission>>
+) => {
+  if (task.validUrl === null) {
+    return task;
+  }
+  const list = submissions.get(task.validUrl);
+  if (list === undefined) {
+    return task;
+  }
+  const lastJudgeAccepted = list
+    .filter(s => s.result === "Accepted" && s.creationTimeSecond !== null)
+    .map(s => s.creationTimeSecond)
+    .max();
+  if (lastJudgeAccepted) {
+    return { ...task, lastJudgeAccepted };
+  } else {
+    return task;
+  }
+};
+
+const rootReducer = (state: State = initialize(), action: Action): State => {
+  console.log(action);
+  const userIds = userIdsReducer(state.userIds, action);
+  const submissions = submissionReducer(state.submissions, action);
+  const problems = problemsReducer(state.problems, action);
+  const tasks = taskReducer(state.tasks, action);
+  const refinedTasks = tasks.map(task => refineTask(task, submissions));
+  return { tasks: refinedTasks, userIds, submissions, problems };
+};
 
 export default rootReducer;

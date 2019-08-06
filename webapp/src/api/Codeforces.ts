@@ -14,6 +14,7 @@ export const fetchCodeforcesSubmissions = (
       (payload: {
         result: {
           id: number;
+          creationTimeSecond: number;
           problem: {
             contestId: number;
             index: string;
@@ -31,7 +32,8 @@ export const fetchCodeforcesSubmissions = (
             url: `https://codeforces.com/contest/${s.problem.contestId}/submission/${s.id}`,
             userId: s.author.members[0].handle,
             result: s.verdict === "OK" ? "Accepted" : "Rejected",
-            problemUrl: `https://codeforces.com/contest/${s.problem.contestId}/problem/${s.problem.index}`
+            problemUrl: `https://codeforces.com/contest/${s.problem.contestId}/problem/${s.problem.index}`,
+            creationTimeSecond: s.creationTimeSecond
           }))
         )
     );

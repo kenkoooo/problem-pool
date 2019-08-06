@@ -5,6 +5,7 @@ export interface Submission {
   readonly userId: string;
   readonly result: "Accepted" | "Rejected";
   readonly problemUrl: string;
+  readonly creationTimeSecond: number | null;
 }
 
 export interface Problem {

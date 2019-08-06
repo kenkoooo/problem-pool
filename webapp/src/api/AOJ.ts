@@ -33,6 +33,7 @@ export const fetchAOJSubmissions = (
       (
         submissions: {
           judgeId: number;
+          submissionDate: number;
           userId: string;
           problemId: string;
           language: string;
@@ -43,7 +44,8 @@ export const fetchAOJSubmissions = (
             url: `https://onlinejudge.u-aizu.ac.jp/solutions/problem/${submission.problemId}/review/${submission.judgeId}/${submission.userId}/${submission.language}`,
             problemUrl: `https://onlinejudge.u-aizu.ac.jp/problems/${submission.problemId}`,
             userId: submission.userId,
-            result: "Accepted"
+            result: "Accepted",
+            creationTimeSecond: submission.submissionDate / 1000
           }))
         )
     );

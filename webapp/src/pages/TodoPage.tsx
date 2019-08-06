@@ -64,7 +64,6 @@ class TodoPage extends React.Component<Props, LocalState> {
     const { submissions } = this.props;
     const isAccepted = (problem: Problem) => {
       const list = submissions.get(problem.url);
-      console.log(list);
       return (
         list !== undefined &&
         list.find(s => s.result === "Accepted") !== undefined
