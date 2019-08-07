@@ -27,32 +27,25 @@ where
     Ok(token)
 }
 
-pub struct Token<T> {
-    payload: T,
-}
-
-impl<T> Token<T>
+pub fn parse_token<T>(key: &str, token: &str) -> Result<T, Error>
 where
     T: DeserializeOwned,
 {
-    pub fn parse(token: &str, key: &str) -> Result<Token<T>, Error> {
-        let mut iter = token.split('.');
-        let header = iter.next().ok_or_else(|| format_err!("Invalid token."))?;
-        let payload = iter.next().ok_or_else(|| format_err!("Invalid token."))?;
-        let signature = iter.next().ok_or_else(|| format_err!("Invalid token."))?;
-        let signature =
-            decode_config(signature, URL_SAFE_NO_PAD).map_err(|err| format_err!("{}", err))?;
-        let mut mac =
-            Hmac::<Sha256>::new_varkey(key.as_bytes()).map_err(|err| format_err!("{}", err))?;
-        let input = header.to_string() + "." + payload;
-        mac.input(input.as_bytes());
-        mac.verify(&signature)
-            .map_err(|err| format_err!("{}", err))?;
-        let payload =
-            decode_config(payload, URL_SAFE_NO_PAD).map_err(|err| format_err!("{}", err))?;
-        let payload = serde_json::from_str::<T>(String::from_utf8(payload)?.as_str())?;
-        Ok(Token { payload })
-    }
+    let mut iter = token.split('.');
+    let header = iter.next().ok_or_else(|| format_err!("Invalid token."))?;
+    let payload = iter.next().ok_or_else(|| format_err!("Invalid token."))?;
+    let signature = iter.next().ok_or_else(|| format_err!("Invalid token."))?;
+    let signature =
+        decode_config(signature, URL_SAFE_NO_PAD).map_err(|err| format_err!("{}", err))?;
+    let mut mac =
+        Hmac::<Sha256>::new_varkey(key.as_bytes()).map_err(|err| format_err!("{}", err))?;
+    let input = header.to_string() + "." + payload;
+    mac.input(input.as_bytes());
+    mac.verify(&signature)
+        .map_err(|err| format_err!("{}", err))?;
+    let payload = decode_config(payload, URL_SAFE_NO_PAD).map_err(|err| format_err!("{}", err))?;
+    let payload = serde_json::from_str::<T>(String::from_utf8(payload)?.as_str())?;
+    Ok(payload)
 }
 
 #[cfg(test)]
@@ -73,9 +66,9 @@ mod tests {
 
         let token = generate_token(key, &request).unwrap();
         assert_eq!("eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ1c2VyX2lkIjoia2Vua29vb28ifQ.DiwnSGxzPsG5l0G0EpOOjJDLgK9z9mnrKYbk9wkOJPc".to_string(), token);
-        assert!(Token::<RequestBody>::parse(&token, &key).is_ok());
+        assert!(parse_token::<RequestBody>(&key, &token).is_ok());
 
         let token = r#"eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJ1c2VyX2lkIjoia2Vua29vb28ifQ.DiwnSGxzPsG5l0G0EpOOjJDLgK9z9mnrKYbk9wkOJPd"#;
-        assert!(Token::<RequestBody>::parse(&token, &key).is_err());
+        assert!(parse_token::<RequestBody>(&key, &token).is_err());
     }
 }
