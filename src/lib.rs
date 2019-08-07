@@ -1,2 +1,2 @@
 pub mod jwt;
-mod model;
+pub mod model;
