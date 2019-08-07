@@ -1,9 +1,7 @@
-use super::{LambdaInput, LambdaOutput, EXPIRE_DURATION_SECONDS, STATUS_CODE_OK};
+use super::{LambdaInput, LambdaOutput, STATUS_CODE_OK};
 
-use crate::api::TokenInfo;
+use crate::api::refresh_token;
 use crate::db::SimpleDynamoDBClient;
-use crate::jwt::generate_token;
-use chrono::Utc;
 use lambda_runtime::error::HandlerError;
 use lambda_runtime::{Context, Handler};
 use rusoto_dynamodb::DynamoDbClient;
@@ -35,12 +33,7 @@ impl AuthHandler {
             Ok(LambdaOutput::bad_request("This ID is already registered."))
         } else {
             self.client.register(&body.user_id, &body.password)?;
-            let expire_time_second = Utc::now().timestamp() + EXPIRE_DURATION_SECONDS;
-            let token_info = TokenInfo {
-                expire_time_second,
-                user_id: body.user_id,
-            };
-            let token = generate_token(&self.secret_key, &token_info)?;
+            let token = refresh_token(&self.secret_key, &body.user_id)?;
             Ok(LambdaOutput {
                 is_base64_encoded: false,
                 status_code: STATUS_CODE_OK,
@@ -56,12 +49,7 @@ impl AuthHandler {
         } else if !self.client.is_valid_login(&body.user_id, &body.password) {
             Ok(LambdaOutput::bad_request("Invalid password."))
         } else {
-            let expire_time_second = Utc::now().timestamp() + EXPIRE_DURATION_SECONDS;
-            let token_info = TokenInfo {
-                expire_time_second,
-                user_id: body.user_id,
-            };
-            let token = generate_token(&self.secret_key, &token_info)?;
+            let token = refresh_token(&self.secret_key, &body.user_id)?;
             Ok(LambdaOutput {
                 is_base64_encoded: false,
                 status_code: STATUS_CODE_OK,

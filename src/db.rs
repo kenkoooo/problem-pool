@@ -14,16 +14,23 @@ const DATA_ATTRIBUTE: &str = "saved_data";
 
 pub(crate) struct SimpleDynamoDBClient<C> {
     client: C,
-    hash_count: usize,
-    salt: String,
+    hash_count: Option<usize>,
+    salt: Option<String>,
 }
 
 impl SimpleDynamoDBClient<DynamoDbClient> {
     pub(crate) fn new(hash_count: usize, salt: &str) -> Self {
         Self {
             client: DynamoDbClient::new(Region::ApNortheast1),
-            hash_count,
-            salt: salt.to_string(),
+            hash_count: Some(hash_count),
+            salt: Some(salt.to_string()),
+        }
+    }
+    pub(crate) fn for_sync() -> Self {
+        Self {
+            client: DynamoDbClient::new(Region::ApNortheast1),
+            hash_count: None,
+            salt: None,
         }
     }
 
@@ -89,20 +96,36 @@ impl SimpleDynamoDBClient<DynamoDbClient> {
     }
 
     pub(crate) fn register(&self, user_id: &str, raw_password: &str) -> Result<(), Error> {
+        let salt = self
+            .salt
+            .as_ref()
+            .ok_or_else(|| format_err!("Salt is not set."))?;
+        let hash_count = self
+            .hash_count
+            .ok_or_else(|| format_err!("Hash-count is not set."))?;
         let hashed_password_binary =
-            hash_password::<Sha256>(raw_password.as_bytes(), self.salt.as_str(), self.hash_count);
+            hash_password::<Sha256>(raw_password.as_bytes(), salt, hash_count);
         let hashed_password_string = hex::encode(hashed_password_binary);
         self.put(user_id, (PASSWORD_ATTRIBUTE, &hashed_password_string))
     }
 
     pub(crate) fn is_valid_login(&self, user_id: &str, raw_password: &str) -> bool {
+        let salt = self.salt.as_ref();
+        if salt.is_none() {
+            return false;
+        }
+        let salt = salt.unwrap();
+
+        let hash_count = self.hash_count;
+        if hash_count.is_none() {
+            return false;
+        }
+        let hash_count = hash_count.unwrap();
+
         match self.get(user_id, PASSWORD_ATTRIBUTE) {
             Ok(stored_password_hash) => {
-                let hashed_password_binary = hash_password::<Sha256>(
-                    raw_password.as_bytes(),
-                    self.salt.as_str(),
-                    self.hash_count,
-                );
+                let hashed_password_binary =
+                    hash_password::<Sha256>(raw_password.as_bytes(), salt, hash_count);
                 let hashed_password_string = hex::encode(hashed_password_binary);
                 hashed_password_string == stored_password_hash
             }

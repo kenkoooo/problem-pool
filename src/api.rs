@@ -1,7 +1,11 @@
+use crate::jwt::generate_token;
+use chrono::Utc;
+use failure::Error;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 pub mod register;
+pub mod sync;
 
 const STATUS_CODE_OK: u32 = 200;
 const STATUS_CODE_BAD_REQUEST: u32 = 400;
@@ -38,4 +42,13 @@ pub struct LambdaInput {
 pub struct TokenInfo {
     expire_time_second: i64,
     user_id: String,
+}
+
+fn refresh_token(secret_key: &str, user_id: &str) -> Result<String, Error> {
+    let expire_time_second = Utc::now().timestamp() + EXPIRE_DURATION_SECONDS;
+    let token_info = TokenInfo {
+        expire_time_second,
+        user_id: user_id.to_string(),
+    };
+    generate_token(secret_key, &token_info)
 }
