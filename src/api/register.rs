@@ -64,11 +64,14 @@ impl Handler<LambdaInput, LambdaOutput, HandlerError> for RegisterHandler {
                             body: token,
                             headers: HashMap::new(),
                         })
-                        .unwrap_or_else(|| LambdaOutput {
-                            is_base64_encoded: false,
-                            status_code: STATUS_CODE_INTERNAL_ERROR,
-                            body: "Failed to generate token.".to_string(),
-                            headers: HashMap::new(),
+                        .unwrap_or_else(|err| {
+                            eprintln!("{:?}", err);
+                            LambdaOutput {
+                                is_base64_encoded: false,
+                                status_code: STATUS_CODE_INTERNAL_ERROR,
+                                body: "Failed to generate token.".to_string(),
+                                headers: HashMap::new(),
+                            }
                         })
                 })
                 .or_else(|err| {
