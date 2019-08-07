@@ -1,4 +1,4 @@
-use sha2::{Digest, Sha256};
+use sha2::Digest;
 
 fn hash_password_once<D: Digest>(password: &[u8], salt: &str) -> Vec<u8> {
     let mut hasher = D::new();
@@ -19,6 +19,7 @@ pub fn hash_password<D: Digest>(password: &[u8], salt: &str, count: usize) -> Ve
 #[cfg(test)]
 mod tests {
     use super::*;
+    use sha2::Sha256;
 
     #[test]
     fn test_hash_password_once() {

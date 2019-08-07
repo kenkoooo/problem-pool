@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub mod login;
 pub mod register;
 
 const STATUS_CODE_OK: u32 = 200;

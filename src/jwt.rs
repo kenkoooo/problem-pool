@@ -2,7 +2,7 @@ use base64;
 use base64::{decode_config, encode_config, URL_SAFE_NO_PAD};
 use failure::Error;
 use hmac::{Hmac, Mac};
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Serialize};
 use serde_json;
 use sha2::Sha256;
 

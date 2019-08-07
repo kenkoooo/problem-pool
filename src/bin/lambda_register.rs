@@ -1,17 +1,16 @@
-use lambda_runtime::{error::HandlerError, lambda, start, Context};
-use rusoto_core::Region;
-
-use std::collections::HashMap;
+use lambda_runtime::start;
+use problem_pool::api::register::{AuthHandler, AuthType};
+use std::env;
 use std::error::Error;
 
-use problem_pool::api::register::RegisterHandler;
-use problem_pool::db::{KeyValueStore, SimpleDynamoDBClient};
-
 fn main() -> Result<(), Box<dyn Error>> {
-    let salt = "salt";
-    let secret_key = "secret key";
-    let hash_count = 7;
+    let hash_count = env::var("HASH_COUNT")?.parse::<usize>()?;
+    let salt = env::var("SALT")?;
+    let secret_key = env::var("SECRET_KEY")?;
 
-    start(RegisterHandler::new(salt, hash_count, secret_key), None);
+    start(
+        AuthHandler::new(&salt, hash_count, &secret_key, AuthType::Register),
+        None,
+    );
     Ok(())
 }

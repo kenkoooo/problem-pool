@@ -7,7 +7,6 @@ use rusoto_dynamodb::{
 use sha2::Sha256;
 use std::collections::HashMap;
 
-const DYNAMO_PASSWORD_FIELD: &str = "password";
 const TABLE_NAME: &str = "problem-pool";
 const PRIMARY_KEY: &str = "user_id";
 const PASSWORD_ATTRIBUTE: &str = "password";
@@ -40,7 +39,7 @@ impl SimpleDynamoDBClient<DynamoDbClient> {
         map
     }
 
-    pub(crate) fn put(&self, key: &str, value: (&str, &str)) -> Result<(), Error> {
+    fn put(&self, key: &str, value: (&str, &str)) -> Result<(), Error> {
         let key = self.create_dynamo_key(key);
 
         let (value_column, value) = value;
@@ -65,11 +64,11 @@ impl SimpleDynamoDBClient<DynamoDbClient> {
         self.client
             .update_item(item)
             .sync()
-            .map(|ok| ())
+            .map(|_| ())
             .map_err(|e| format_err!("{}", e.to_string()))
     }
 
-    pub(crate) fn get(&self, key: &str, field: &str) -> Result<String, Error> {
+    fn get(&self, key: &str, field: &str) -> Result<String, Error> {
         self.client
             .get_item(GetItemInput {
                 table_name: TABLE_NAME.to_string(),
@@ -80,10 +79,11 @@ impl SimpleDynamoDBClient<DynamoDbClient> {
             .sync()
             .ok()
             .and_then(|item| item.item)
-            .and_then(|mut map| map.into_iter().next())
+            .and_then(|map| map.into_iter().next())
             .and_then(|(_, attr)| attr.s)
             .ok_or_else(|| format_err!("Item not found"))
     }
+
     pub(crate) fn is_registered(&self, user_id: &str) -> bool {
         self.get(user_id, PASSWORD_ATTRIBUTE).is_ok()
     }
