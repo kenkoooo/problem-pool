@@ -3,6 +3,7 @@ import {
   CLEAR_SUBMISSIONS,
   RECEIVE_PROBLEMS,
   RECEIVE_SUBMISSIONS,
+  RECEIVE_TOKEN,
   REMOVE_TASK,
   SAVE_USERNAME,
   SOLVE_TASK,
@@ -13,11 +14,9 @@ import { State, UserIds } from "../common";
 import { createTask, PooledTask } from "../common/PooledTask";
 import { Problem, Submission } from "../api";
 import * as LocalStorage from "../common/LocalStorage";
+import { parseToken, Token } from "../common/Token";
 
-const taskReducer = (
-  state: Map<string, PooledTask> = Map(),
-  action: Action
-) => {
+const taskReducer = (state: Map<string, PooledTask>, action: Action) => {
   switch (action.type) {
     case REMOVE_TASK: {
       const { key } = action;
@@ -47,15 +46,7 @@ const taskReducer = (
   }
 };
 
-const userIdsReducer = (
-  state: UserIds = {
-    atcoder: "",
-    codeforces: "",
-    yukicoder: "",
-    aoj: ""
-  },
-  action: Action
-) => {
+const userIdsReducer = (state: UserIds, action: Action) => {
   switch (action.type) {
     case SAVE_USERNAME: {
       return action.userIds;
@@ -67,7 +58,7 @@ const userIdsReducer = (
 };
 
 const submissionReducer = (
-  state: Map<string, List<Submission>> = Map(),
+  state: Map<string, List<Submission>>,
   action: Action
 ) => {
   switch (action.type) {
@@ -92,10 +83,7 @@ const submissionReducer = (
   }
 };
 
-const problemReducer = (
-  state: Map<string, Problem> = Map(),
-  action: Action
-) => {
+const problemReducer = (state: Map<string, Problem>, action: Action) => {
   switch (action.type) {
     case RECEIVE_PROBLEMS: {
       const { problems } = action;
@@ -133,17 +121,29 @@ const initialize = (): State => ({
   tasks: LocalStorage.loadTasks(),
   userIds: LocalStorage.loadUserIds(),
   submissions: Map(),
-  problems: Map()
+  problems: Map(),
+  token: LocalStorage.loadToken()
 });
 
+const tokenReducer = (state: Token | null, action: Action) => {
+  switch (action.type) {
+    case RECEIVE_TOKEN: {
+      return parseToken(action.token);
+    }
+    default: {
+      return state;
+    }
+  }
+};
+
 const rootReducer = (state: State = initialize(), action: Action): State => {
-  console.log(action);
   const userIds = userIdsReducer(state.userIds, action);
   const submissions = submissionReducer(state.submissions, action);
   const problems = problemReducer(state.problems, action);
   const tasks = taskReducer(state.tasks, action);
+  const token = tokenReducer(state.token, action);
   const refinedTasks = tasks.map(task => refineTask(task, submissions));
-  return { tasks: refinedTasks, userIds, submissions, problems };
+  return { tasks: refinedTasks, userIds, submissions, problems, token };
 };
 
 export default rootReducer;

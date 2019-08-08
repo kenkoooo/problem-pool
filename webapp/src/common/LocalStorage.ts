@@ -1,6 +1,7 @@
 import { UserIds } from "./index";
 import { Map } from "immutable";
 import { PooledTask } from "./PooledTask";
+import { parseToken } from "./Token";
 
 const USER_IDS = "USER_IDS";
 const TASKS = "TASKS";
@@ -31,4 +32,11 @@ export const loadTasks = (): Map<string, PooledTask> => {
 };
 
 export const saveToken = (token: string) => localStorage.setItem(TOKEN, token);
-export const loadToken = () => localStorage.getItem(TOKEN);
+export const loadToken = () => {
+  const token = localStorage.getItem(TOKEN);
+  if (token) {
+    return parseToken(token);
+  } else {
+    return null;
+  }
+};

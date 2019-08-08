@@ -16,9 +16,12 @@ import {
 import { State } from "../common";
 import { Dispatch } from "redux";
 import { requestToken } from "../actions";
+import { Redirect } from "react-router";
+import { Token } from "../common/Token";
 
 interface Props {
   login: (userId: string, password: string, register: boolean) => void;
+  token: Token | null;
 }
 interface LocalState {
   activeTab: "Login" | "Register";
@@ -34,6 +37,7 @@ class LoginPage extends React.Component<Props, LocalState> {
     const { activeTab, userId, password } = this.state;
     return (
       <React.Fragment>
+        {this.props.token ? <Redirect to="/" /> : null}
         <Nav tabs>
           <NavItem>
             <NavLink
@@ -96,7 +100,7 @@ class LoginPage extends React.Component<Props, LocalState> {
   }
 }
 
-const mapStateToProps = (state: State) => ({});
+const mapStateToProps = (state: State) => ({ token: state.token });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   login: (userId: string, password: string, register: boolean) =>
     dispatch(requestToken(userId, password, register))
