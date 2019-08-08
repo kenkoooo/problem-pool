@@ -1,5 +1,5 @@
 use lambda_runtime::start;
-use problem_pool::api::register::{AuthHandler, AuthType};
+use problem_pool::api::login::LoginHandler;
 use std::env;
 use std::error::Error;
 
@@ -8,9 +8,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let salt = env::var("SALT")?;
     let secret_key = env::var("SECRET_KEY")?;
 
-    start(
-        AuthHandler::new(&salt, hash_count, &secret_key, AuthType::Login),
-        None,
-    );
+    start(LoginHandler::new(&salt, hash_count, &secret_key), None);
     Ok(())
 }

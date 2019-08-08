@@ -4,7 +4,7 @@ use failure::Error;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub mod register;
+pub mod login;
 pub mod sync;
 
 const STATUS_CODE_OK: u32 = 200;
