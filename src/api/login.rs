@@ -33,11 +33,13 @@ impl LoginHandler {
         } else {
             self.client.register(&body.user_id, &body.password)?;
             let token = refresh_token(&self.secret_key, &body.user_id)?;
+            let mut headers = HashMap::new();
+            headers.insert("Access-Control-Allow-Origin".to_owned(), "*".to_owned());
             Ok(LambdaOutput {
                 is_base64_encoded: false,
                 status_code: STATUS_CODE_OK,
                 body: serde_json::to_string(&AuthOutput { token })?,
-                headers: HashMap::new(),
+                headers,
             })
         }
     }
@@ -49,11 +51,13 @@ impl LoginHandler {
             Ok(LambdaOutput::bad_request("Invalid password."))
         } else {
             let token = refresh_token(&self.secret_key, &body.user_id)?;
+            let mut headers = HashMap::new();
+            headers.insert("Access-Control-Allow-Origin".to_owned(), "*".to_owned());
             Ok(LambdaOutput {
                 is_base64_encoded: false,
                 status_code: STATUS_CODE_OK,
                 body: serde_json::to_string(&AuthOutput { token })?,
-                headers: HashMap::new(),
+                headers,
             })
         }
     }

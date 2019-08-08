@@ -12,6 +12,8 @@ import {
 } from "../api/Yukicoder";
 import { fetchAOJProblems, fetchAOJSubmissions } from "../api/AOJ";
 import * as LocalStorage from "../common/LocalStorage";
+import { loginPool } from "../pool-api";
+import { failedToken, receiveToken } from "../actions";
 
 function* requestProblems() {
   yield all([
@@ -95,8 +97,24 @@ function* saveTasks() {
   );
 }
 
+function* requestToken() {
+  yield takeLatest(Actions.REQUEST_TOKEN, function*(action: Actions.Action) {
+    if (action.type === Actions.REQUEST_TOKEN) {
+      const { userId, password, register } = action;
+      try {
+        const { token } = yield call(loginPool, userId, password, register);
+        yield call(LocalStorage.saveToken, token);
+        yield put(receiveToken(token));
+      } catch {
+        yield put(failedToken());
+      }
+    }
+  });
+}
+
 export default function* rootSaga() {
   yield all([
+    fork(requestToken),
     fork(requestProblems),
     fork(requestSubmissions),
     fork(saveUserIds),

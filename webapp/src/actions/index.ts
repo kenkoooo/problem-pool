@@ -10,6 +10,9 @@ export const REQUEST_SUBMISSIONS = "REQUEST_SUBMISSIONS";
 export const RECEIVE_SUBMISSIONS = "RECEIVE_SUBMISSIONS";
 export const CLEAR_SUBMISSIONS = "CLEAR_SUBMISSIONS";
 export const SOLVE_TASK = "SOLVE_TASK";
+export const REQUEST_TOKEN = "REQUEST_TOKEN";
+export const RECEIVE_TOKEN = "RECEIVE_TOKEN";
+export const FAILED_TOKEN = "FAILED_TOKEN";
 
 export const submitTask = (url: string) => ({
   type: SUBMIT_TASK as typeof SUBMIT_TASK,
@@ -57,6 +60,26 @@ export const solveTask = (
   reviewSecond
 });
 
+export const requestToken = (
+  userId: string,
+  password: string,
+  register: boolean
+) => ({
+  type: REQUEST_TOKEN as typeof REQUEST_TOKEN,
+  userId,
+  password,
+  register
+});
+
+export const receiveToken = (token: string) => ({
+  type: RECEIVE_TOKEN as typeof RECEIVE_TOKEN,
+  token
+});
+
+export const failedToken = () => ({
+  type: FAILED_TOKEN as typeof FAILED_TOKEN
+});
+
 export type Action =
   | ReturnType<typeof submitTask>
   | ReturnType<typeof removeTask>
@@ -65,4 +88,7 @@ export type Action =
   | ReturnType<typeof receiveSubmissions>
   | ReturnType<typeof requestSubmissions>
   | ReturnType<typeof clearSubmissions>
-  | ReturnType<typeof solveTask>;
+  | ReturnType<typeof solveTask>
+  | ReturnType<typeof requestToken>
+  | ReturnType<typeof receiveToken>
+  | ReturnType<typeof failedToken>;

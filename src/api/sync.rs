@@ -56,11 +56,13 @@ impl Handler<LambdaInput, LambdaOutput, HandlerError> for SyncHandler {
                 loaded_data: Some(self.client.load_data(&user_id)?),
             },
         };
+        let mut headers = HashMap::new();
+        headers.insert("Access-Control-Allow-Origin".to_owned(), "*".to_owned());
         Ok(LambdaOutput {
             is_base64_encoded: false,
             status_code: STATUS_CODE_OK,
             body: serde_json::to_string(&response)?,
-            headers: HashMap::new(),
+            headers,
         })
     }
 }

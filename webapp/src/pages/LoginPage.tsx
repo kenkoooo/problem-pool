@@ -15,8 +15,11 @@ import {
 } from "reactstrap";
 import { State } from "../common";
 import { Dispatch } from "redux";
+import { requestToken } from "../actions";
 
-interface Props {}
+interface Props {
+  login: (userId: string, password: string, register: boolean) => void;
+}
 interface LocalState {
   activeTab: "Login" | "Register";
   userId: string;
@@ -72,7 +75,17 @@ class LoginPage extends React.Component<Props, LocalState> {
                     onChange={e => this.setState({ password: e.target.value })}
                     value={password}
                   />
-                  <Button>{activeTab}</Button>
+                  <Button
+                    onClick={() =>
+                      this.props.login(
+                        userId,
+                        password,
+                        activeTab === "Register"
+                      )
+                    }
+                  >
+                    {activeTab}
+                  </Button>
                 </FormGroup>
               </Col>
             </Row>
@@ -84,7 +97,10 @@ class LoginPage extends React.Component<Props, LocalState> {
 }
 
 const mapStateToProps = (state: State) => ({});
-const mapDispatchToProps = (dispatch: Dispatch) => ({});
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  login: (userId: string, password: string, register: boolean) =>
+    dispatch(requestToken(userId, password, register))
+});
 
 export default connect(
   mapStateToProps,

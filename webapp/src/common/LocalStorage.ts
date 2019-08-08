@@ -4,6 +4,7 @@ import { PooledTask } from "./PooledTask";
 
 const USER_IDS = "USER_IDS";
 const TASKS = "TASKS";
+const TOKEN = "TOKEN";
 
 export const saveUserIds = (userIds: UserIds) =>
   localStorage.setItem(USER_IDS, JSON.stringify(userIds));
@@ -19,6 +20,7 @@ export const loadUserIds = (): UserIds => {
 
 export const saveTasks = (tasks: Map<string, PooledTask>) =>
   localStorage.setItem(TASKS, JSON.stringify(tasks));
+
 export const loadTasks = (): Map<string, PooledTask> => {
   const item = localStorage.getItem(TASKS);
   if (item === null) {
@@ -27,3 +29,6 @@ export const loadTasks = (): Map<string, PooledTask> => {
     return Map<string, PooledTask>(JSON.parse(item));
   }
 };
+
+export const saveToken = (token: string) => localStorage.setItem(TOKEN, token);
+export const loadToken = () => localStorage.getItem(TOKEN);
