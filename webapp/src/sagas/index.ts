@@ -12,9 +12,8 @@ import {
 } from "../api/Yukicoder";
 import { fetchAOJProblems, fetchAOJSubmissions } from "../api/AOJ";
 import * as LocalStorage from "../common/LocalStorage";
-import { fetchPoolData, loginPool } from "../pool-api";
-import { Map } from "immutable";
-import { PooledTask } from "../common/PooledTask";
+import { syncPoolData, loginPool } from "../pool-api";
+import { convertToSaveData, SaveData } from "../common/LocalStorage";
 
 function* requestProblems() {
   yield all([
@@ -43,46 +42,54 @@ function* requestSubmissions() {
   yield all([
     fork(function*() {
       if (userIds.codeforces.length > 0) {
-        const submissions = yield call(
-          fetchCodeforcesSubmissions,
-          userIds.codeforces
-        );
-        yield put(Actions.receiveSubmissions(submissions));
+        try {
+          const submissions = yield call(
+            fetchCodeforcesSubmissions,
+            userIds.codeforces
+          );
+          yield put(Actions.receiveSubmissions(submissions));
+        } catch (e) {
+          console.error(e);
+        }
       }
     }),
     fork(function*() {
       if (userIds.atcoder.length > 0) {
-        const submissions = yield call(
-          fetchAtCoderSubmissions,
-          userIds.atcoder
-        );
-        yield put(Actions.receiveSubmissions(submissions));
+        try {
+          const submissions = yield call(
+            fetchAtCoderSubmissions,
+            userIds.atcoder
+          );
+          yield put(Actions.receiveSubmissions(submissions));
+        } catch (e) {
+          console.error(e);
+        }
       }
     }),
     fork(function*() {
       if (userIds.yukicoder.length > 0) {
-        const submissions = yield call(
-          fetchYukicoderSolvedProblems,
-          userIds.yukicoder
-        );
-        yield put(Actions.receiveSubmissions(submissions));
+        try {
+          const submissions = yield call(
+            fetchYukicoderSolvedProblems,
+            userIds.yukicoder
+          );
+          yield put(Actions.receiveSubmissions(submissions));
+        } catch (e) {
+          console.error(e);
+        }
       }
     }),
     fork(function*() {
       if (userIds.aoj.length > 0) {
-        const submissions = yield call(fetchAOJSubmissions, userIds.aoj);
-        yield put(Actions.receiveSubmissions(submissions));
+        try {
+          const submissions = yield call(fetchAOJSubmissions, userIds.aoj);
+          yield put(Actions.receiveSubmissions(submissions));
+        } catch (e) {
+          console.error(e);
+        }
       }
     })
   ]);
-}
-
-function* saveUserIds() {
-  yield takeLatest(Actions.SAVE_USERNAME, function*() {
-    const userIds = yield select((state: State) => state.userIds);
-    yield call(LocalStorage.saveUserIds, userIds);
-    yield call(requestSubmissions);
-  });
 }
 
 function* requestToken() {
@@ -91,42 +98,70 @@ function* requestToken() {
       const { userId, password, register } = action;
       try {
         const { token } = yield call(loginPool, userId, password, register);
-        yield call(LocalStorage.saveToken, token);
         yield put(Actions.receiveToken(token));
-      } catch {
+        const state = yield select(state => state);
+        yield call(LocalStorage.saveState, state);
+        yield call(fetchData);
+      } catch (e) {
+        console.error(e);
         yield put(Actions.failedToken());
       }
     }
   });
 }
 
+function* fetchData() {
+  const token = yield select((state: State) => state.token);
+  const tokenString = token ? token.token : "";
+
+  try {
+    // fetch
+    const fetchedData = yield call(syncPoolData, tokenString, undefined);
+
+    // merge
+    const { refreshedToken, loadedData } = fetchedData;
+    yield put(Actions.refreshToken(refreshedToken));
+    const saveData: SaveData = JSON.parse(loadedData);
+    yield put(Actions.mergeTasks(saveData.tasks));
+    yield put(Actions.receiveUsername(saveData.userIds));
+  } catch (e) {
+    console.error("Failed to fetch ", e);
+  }
+}
+
 function* syncData() {
+  yield call(fetchData);
   yield takeLatest(
-    (action: Actions.Action) =>
-      action.type === Actions.RECEIVE_TOKEN ||
-      action.type === Actions.SUBMIT_TASK ||
-      action.type === Actions.REMOVE_TASK ||
-      action.type === Actions.SOLVE_TASK,
-    function*() {
-      console.log("syncData");
-      const tasks = yield select((state: State) => state.tasks);
-      yield call(LocalStorage.saveTasks, tasks);
-
-      const token = yield select((state: State) =>
-        state.token ? state.token.token : ""
-      );
-      const fetchedData = yield call(fetchPoolData, token);
-      const { refreshedToken, loadedData } = fetchedData;
-      yield put(Actions.receiveToken(refreshedToken));
-
-      try {
-        const tasks: Map<string, PooledTask> = Map(JSON.parse(loadedData));
-        yield put(Actions.mergeTasks(tasks));
-      } catch {
-        console.error("Failed to parse ", loadedData);
-      }
-    }
+    [
+      Actions.SOLVE_TASK,
+      Actions.REMOVE_TASK,
+      Actions.SUBMIT_TASK,
+      Actions.SAVE_USERNAME,
+      Actions.RECEIVE_TOKEN
+    ],
+    loadData
   );
+}
+
+function* loadData() {
+  const token = yield select((state: State) => state.token);
+  const tokenString = token ? token.token : "";
+
+  try {
+    // save
+    const state = yield select(state => state);
+    const { refreshedToken } = yield call(
+      syncPoolData,
+      tokenString,
+      JSON.stringify(convertToSaveData(state))
+    );
+    yield put(Actions.refreshToken(refreshedToken));
+  } catch (e) {
+    console.error("Failed to save ", e);
+  }
+
+  const state = yield select(state => state);
+  yield call(LocalStorage.saveState, state);
 }
 
 export default function* rootSaga() {
@@ -134,7 +169,6 @@ export default function* rootSaga() {
     fork(requestToken),
     fork(requestProblems),
     fork(requestSubmissions),
-    fork(saveUserIds),
     fork(syncData)
   ]);
 }

@@ -16,8 +16,12 @@ export interface LoginResponse {
   readonly token: string;
 }
 
-export const fetchPoolData = (token: string) =>
-  fetch(BASE_URL + "/sync", { method: "POST", body: JSON.stringify({ token }) })
+export const syncPoolData = (token: string, saved_data: string | undefined) => {
+  const body = JSON.stringify({ token, saved_data });
+  return fetch(BASE_URL + "/sync", {
+    method: "POST",
+    body
+  })
     .then(r => r.json())
     .then(
       (r: { token: string; loaded_data: string | null }): SyncResponse => ({
@@ -25,15 +29,7 @@ export const fetchPoolData = (token: string) =>
         loadedData: r.loaded_data
       })
     );
-export const postPoolData = (token: string) =>
-  fetch(BASE_URL + "/sync", { method: "POST", body: JSON.stringify({ token }) })
-    .then(r => r.json())
-    .then(
-      (r: { token: string; loaded_data: string | null }): SyncResponse => ({
-        refreshedToken: r.token,
-        loadedData: r.loaded_data
-      })
-    );
+};
 
 export interface SyncResponse {
   refreshedToken: string;

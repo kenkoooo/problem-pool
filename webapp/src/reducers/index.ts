@@ -5,6 +5,7 @@ import {
   RECEIVE_PROBLEMS,
   RECEIVE_SUBMISSIONS,
   RECEIVE_TOKEN,
+  RECEIVE_USERNAME,
   REMOVE_TASK,
   SAVE_USERNAME,
   SOLVE_TASK,
@@ -24,8 +25,8 @@ const taskReducer = (state: Map<string, PooledTask>, action: Action) => {
       return state.remove(key);
     }
     case SUBMIT_TASK: {
-      const { url } = action;
-      return state.set(url, createTask(url));
+      const { input } = action;
+      return state.set(input, createTask(input));
     }
     case SOLVE_TASK: {
       const { key, solvedSecond, reviewSecond } = action;
@@ -72,8 +73,15 @@ const taskReducer = (state: Map<string, PooledTask>, action: Action) => {
 
 const userIdsReducer = (state: UserIds, action: Action) => {
   switch (action.type) {
+    case RECEIVE_USERNAME:
     case SAVE_USERNAME: {
-      return action.userIds;
+      const { atcoder, codeforces, yukicoder, aoj } = action.userIds;
+      return {
+        atcoder: atcoder === "" ? state.atcoder : atcoder,
+        codeforces: codeforces === "" ? state.codeforces : codeforces,
+        aoj: aoj === "" ? state.aoj : aoj,
+        yukicoder: yukicoder === "" ? state.yukicoder : yukicoder
+      };
     }
     default: {
       return state;
@@ -119,35 +127,21 @@ const problemReducer = (state: Map<string, Problem>, action: Action) => {
   }
 };
 
-const refineTask = (
-  task: PooledTask,
-  submissions: Map<string, List<Submission>>
-) => {
-  if (task.validUrl === null) {
-    return task;
-  }
-  const list = submissions.get(task.validUrl);
-  if (list === undefined) {
-    return task;
-  }
-  const lastJudgeAccepted = list
-    .filter(s => s.result === "Accepted" && s.creationTimeSecond !== null)
-    .map(s => s.creationTimeSecond)
-    .max();
-  if (lastJudgeAccepted) {
-    return { ...task, lastJudgeAccepted };
-  } else {
-    return task;
-  }
+const initialize = (): State => {
+  const saveData = LocalStorage.getSaveData();
+  const tasks = saveData ? Map(saveData.tasks) : Map<string, PooledTask>();
+  const userIds = saveData
+    ? saveData.userIds
+    : { atcoder: "", codeforces: "", yukicoder: "", aoj: "" };
+  const token = saveData ? saveData.token : null;
+  return {
+    tasks,
+    userIds,
+    submissions: Map(),
+    problems: Map(),
+    token
+  };
 };
-
-const initialize = (): State => ({
-  tasks: LocalStorage.loadTasks(),
-  userIds: LocalStorage.loadUserIds(),
-  submissions: Map(),
-  problems: Map(),
-  token: LocalStorage.loadToken()
-});
 
 const tokenReducer = (state: Token | null, action: Action) => {
   switch (action.type) {
@@ -167,8 +161,7 @@ const rootReducer = (state: State = initialize(), action: Action): State => {
   const problems = problemReducer(state.problems, action);
   const tasks = taskReducer(state.tasks, action);
   const token = tokenReducer(state.token, action);
-  const refinedTasks = tasks.map(task => refineTask(task, submissions));
-  return { tasks: refinedTasks, userIds, submissions, problems, token };
+  return { tasks, userIds, submissions, problems, token };
 };
 
 export default rootReducer;

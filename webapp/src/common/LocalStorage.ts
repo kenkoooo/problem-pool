@@ -1,42 +1,35 @@
-import { UserIds } from "./index";
+import { State, UserIds } from "./index";
 import { Map } from "immutable";
 import { PooledTask } from "./PooledTask";
-import { parseToken } from "./Token";
+import { parseToken, Token } from "./Token";
 
-const USER_IDS = "USER_IDS";
-const TASKS = "TASKS";
-const TOKEN = "TOKEN";
+const LOCAL_STORAGE_KEY = "SAVE_DATA";
 
-export const saveUserIds = (userIds: UserIds) =>
-  localStorage.setItem(USER_IDS, JSON.stringify(userIds));
-
-export const loadUserIds = (): UserIds => {
-  const item = localStorage.getItem(USER_IDS);
-  if (item === null) {
-    return { atcoder: "", codeforces: "", yukicoder: "", aoj: "" };
-  } else {
-    return JSON.parse(item) as UserIds;
-  }
+export const saveState = (state: State) => {
+  const saveData = convertToSaveData(state);
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(saveData));
 };
-
-export const saveTasks = (tasks: Map<string, PooledTask>) =>
-  localStorage.setItem(TASKS, JSON.stringify(tasks));
-
-export const loadTasks = (): Map<string, PooledTask> => {
-  const item = localStorage.getItem(TASKS);
+export const getSaveData = (): SaveData | null => {
+  const item = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (item === null) {
-    return Map<string, PooledTask>();
-  } else {
-    return Map<string, PooledTask>(JSON.parse(item));
-  }
-};
-
-export const saveToken = (token: string) => localStorage.setItem(TOKEN, token);
-export const loadToken = () => {
-  const token = localStorage.getItem(TOKEN);
-  if (token) {
-    return parseToken(token);
-  } else {
     return null;
+  } else {
+    return JSON.parse(item) as SaveData;
   }
 };
+
+export interface SaveData {
+  readonly tasks: Map<string, PooledTask>;
+  readonly userIds: UserIds;
+  readonly token: Token | null;
+}
+
+export const convertToSaveData = ({
+  tasks,
+  userIds,
+  token
+}: State): SaveData => ({
+  tasks,
+  userIds,
+  token
+});
