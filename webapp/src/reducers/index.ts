@@ -1,6 +1,7 @@
 import {
   Action,
   CLEAR_SUBMISSIONS,
+  MERGE_TASKS,
   RECEIVE_PROBLEMS,
   RECEIVE_SUBMISSIONS,
   RECEIVE_TOKEN,
@@ -39,6 +40,29 @@ const taskReducer = (state: Map<string, PooledTask>, action: Action) => {
       } else {
         return state;
       }
+    }
+    case MERGE_TASKS: {
+      const { tasks } = action;
+      return state.mergeWith((oldTask, newTask) => {
+        const lastSolvedByUser =
+          newTask.lastSolvedByUser && oldTask.lastSolvedByUser
+            ? Math.max(newTask.lastSolvedByUser, oldTask.lastSolvedByUser)
+            : newTask.lastSolvedByUser
+            ? newTask.lastSolvedByUser
+            : oldTask.lastSolvedByUser;
+        const nextReviewTime =
+          newTask.nextReviewTime && oldTask.nextReviewTime
+            ? Math.max(newTask.nextReviewTime, oldTask.nextReviewTime)
+            : newTask.nextReviewTime
+            ? newTask.nextReviewTime
+            : oldTask.nextReviewTime;
+
+        return {
+          ...newTask,
+          lastSolvedByUser,
+          nextReviewTime
+        };
+      }, tasks);
     }
     default: {
       return state;
@@ -137,6 +161,7 @@ const tokenReducer = (state: Token | null, action: Action) => {
 };
 
 const rootReducer = (state: State = initialize(), action: Action): State => {
+  console.log(action);
   const userIds = userIdsReducer(state.userIds, action);
   const submissions = submissionReducer(state.submissions, action);
   const problems = problemReducer(state.problems, action);

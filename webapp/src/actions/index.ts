@@ -1,12 +1,11 @@
-import { List } from "immutable";
+import { List, Map } from "immutable";
 import { Problem, Submission } from "../api";
 import { OnlineJudge, UserIds } from "../common";
+import { PooledTask } from "../common/PooledTask";
 
 export const SUBMIT_TASK = "SUBMIT_TASK";
 export const REMOVE_TASK = "REMOVE_TASK";
 export const SOLVE_TASK = "SOLVE_TASK";
-
-export const TASK_CHANGES = [SUBMIT_TASK, REMOVE_TASK, SOLVE_TASK];
 
 export const RECEIVE_PROBLEMS = "RECEIVE_PROBLEMS";
 export const SAVE_USERNAME = "SAVE_USERNAME";
@@ -17,6 +16,8 @@ export const CLEAR_SUBMISSIONS = "CLEAR_SUBMISSIONS";
 export const REQUEST_TOKEN = "REQUEST_TOKEN";
 export const RECEIVE_TOKEN = "RECEIVE_TOKEN";
 export const FAILED_TOKEN = "FAILED_TOKEN";
+
+export const MERGE_TASKS = "MERGE_TASKS";
 
 export const submitTask = (url: string) => ({
   type: SUBMIT_TASK as typeof SUBMIT_TASK,
@@ -84,6 +85,11 @@ export const failedToken = () => ({
   type: FAILED_TOKEN as typeof FAILED_TOKEN
 });
 
+export const mergeTasks = (tasks: Map<string, PooledTask>) => ({
+  type: MERGE_TASKS as typeof MERGE_TASKS,
+  tasks
+});
+
 export type Action =
   | ReturnType<typeof submitTask>
   | ReturnType<typeof removeTask>
@@ -95,4 +101,5 @@ export type Action =
   | ReturnType<typeof solveTask>
   | ReturnType<typeof requestToken>
   | ReturnType<typeof receiveToken>
-  | ReturnType<typeof failedToken>;
+  | ReturnType<typeof failedToken>
+  | ReturnType<typeof mergeTasks>;

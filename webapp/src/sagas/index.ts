@@ -13,7 +13,8 @@ import {
 import { fetchAOJProblems, fetchAOJSubmissions } from "../api/AOJ";
 import * as LocalStorage from "../common/LocalStorage";
 import { fetchPoolData, loginPool } from "../pool-api";
-import { failedToken, receiveToken } from "../actions";
+import { Map } from "immutable";
+import { PooledTask } from "../common/PooledTask";
 
 function* requestProblems() {
   yield all([
@@ -84,19 +85,6 @@ function* saveUserIds() {
   });
 }
 
-function* saveTasks() {
-  yield takeLatest(
-    (action: Actions.Action) =>
-      action.type === Actions.SUBMIT_TASK ||
-      action.type === Actions.REMOVE_TASK ||
-      action.type === Actions.SOLVE_TASK,
-    function*() {
-      const tasks = yield select((state: State) => state.tasks);
-      yield call(LocalStorage.saveTasks, tasks);
-    }
-  );
-}
-
 function* requestToken() {
   yield takeLatest(Actions.REQUEST_TOKEN, function*(action: Actions.Action) {
     if (action.type === Actions.REQUEST_TOKEN) {
@@ -104,9 +92,9 @@ function* requestToken() {
       try {
         const { token } = yield call(loginPool, userId, password, register);
         yield call(LocalStorage.saveToken, token);
-        yield put(receiveToken(token));
+        yield put(Actions.receiveToken(token));
       } catch {
-        yield put(failedToken());
+        yield put(Actions.failedToken());
       }
     }
   });
@@ -116,14 +104,27 @@ function* syncData() {
   yield takeLatest(
     (action: Actions.Action) =>
       action.type === Actions.RECEIVE_TOKEN ||
-      action.type in Actions.TASK_CHANGES,
+      action.type === Actions.SUBMIT_TASK ||
+      action.type === Actions.REMOVE_TASK ||
+      action.type === Actions.SOLVE_TASK,
     function*() {
+      console.log("syncData");
+      const tasks = yield select((state: State) => state.tasks);
+      yield call(LocalStorage.saveTasks, tasks);
+
       const token = yield select((state: State) =>
         state.token ? state.token.token : ""
       );
       const fetchedData = yield call(fetchPoolData, token);
       const { refreshedToken, loadedData } = fetchedData;
-      yield put(receiveToken(refreshedToken));
+      yield put(Actions.receiveToken(refreshedToken));
+
+      try {
+        const tasks: Map<string, PooledTask> = Map(JSON.parse(loadedData));
+        yield put(Actions.mergeTasks(tasks));
+      } catch {
+        console.error("Failed to parse ", loadedData);
+      }
     }
   );
 }
@@ -134,6 +135,6 @@ export default function* rootSaga() {
     fork(requestProblems),
     fork(requestSubmissions),
     fork(saveUserIds),
-    fork(saveTasks)
+    fork(syncData)
   ]);
 }

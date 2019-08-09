@@ -25,6 +25,15 @@ export const fetchPoolData = (token: string) =>
         loadedData: r.loaded_data
       })
     );
+export const postPoolData = (token: string) =>
+  fetch(BASE_URL + "/sync", { method: "POST", body: JSON.stringify({ token }) })
+    .then(r => r.json())
+    .then(
+      (r: { token: string; loaded_data: string | null }): SyncResponse => ({
+        refreshedToken: r.token,
+        loadedData: r.loaded_data
+      })
+    );
 
 export interface SyncResponse {
   refreshedToken: string;
