@@ -15,3 +15,18 @@ export const loginPool = (
 export interface LoginResponse {
   readonly token: string;
 }
+
+export const fetchPoolData = (token: string) =>
+  fetch(BASE_URL + "/sync", { method: "POST", body: JSON.stringify({ token }) })
+    .then(r => r.json())
+    .then(
+      (r: { token: string; loaded_data: string | null }): SyncResponse => ({
+        refreshedToken: r.token,
+        loadedData: r.loaded_data
+      })
+    );
+
+export interface SyncResponse {
+  refreshedToken: string;
+  loadedData: string | null;
+}

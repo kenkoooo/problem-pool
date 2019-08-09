@@ -12,7 +12,7 @@ import {
 } from "../api/Yukicoder";
 import { fetchAOJProblems, fetchAOJSubmissions } from "../api/AOJ";
 import * as LocalStorage from "../common/LocalStorage";
-import { loginPool } from "../pool-api";
+import { fetchPoolData, loginPool } from "../pool-api";
 import { failedToken, receiveToken } from "../actions";
 
 function* requestProblems() {
@@ -110,6 +110,22 @@ function* requestToken() {
       }
     }
   });
+}
+
+function* syncData() {
+  yield takeLatest(
+    (action: Actions.Action) =>
+      action.type === Actions.RECEIVE_TOKEN ||
+      action.type in Actions.TASK_CHANGES,
+    function*() {
+      const token = yield select((state: State) =>
+        state.token ? state.token.token : ""
+      );
+      const fetchedData = yield call(fetchPoolData, token);
+      const { refreshedToken, loadedData } = fetchedData;
+      yield put(receiveToken(refreshedToken));
+    }
+  );
 }
 
 export default function* rootSaga() {

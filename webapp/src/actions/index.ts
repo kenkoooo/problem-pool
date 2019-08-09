@@ -4,12 +4,16 @@ import { OnlineJudge, UserIds } from "../common";
 
 export const SUBMIT_TASK = "SUBMIT_TASK";
 export const REMOVE_TASK = "REMOVE_TASK";
+export const SOLVE_TASK = "SOLVE_TASK";
+
+export const TASK_CHANGES = [SUBMIT_TASK, REMOVE_TASK, SOLVE_TASK];
+
 export const RECEIVE_PROBLEMS = "RECEIVE_PROBLEMS";
 export const SAVE_USERNAME = "SAVE_USERNAME";
 export const REQUEST_SUBMISSIONS = "REQUEST_SUBMISSIONS";
 export const RECEIVE_SUBMISSIONS = "RECEIVE_SUBMISSIONS";
 export const CLEAR_SUBMISSIONS = "CLEAR_SUBMISSIONS";
-export const SOLVE_TASK = "SOLVE_TASK";
+
 export const REQUEST_TOKEN = "REQUEST_TOKEN";
 export const RECEIVE_TOKEN = "RECEIVE_TOKEN";
 export const FAILED_TOKEN = "FAILED_TOKEN";
