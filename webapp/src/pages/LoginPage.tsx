@@ -17,7 +17,7 @@ import { State } from "../common";
 import { Dispatch } from "redux";
 import { Redirect } from "react-router";
 import { Token } from "../common/Token";
-import { requestToken } from "../actions/PoolApiActions";
+import { requestLogin } from "../actions/PoolApiActions";
 
 interface Props {
   login: (userId: string, password: string, register: boolean) => void;
@@ -103,7 +103,7 @@ class LoginPage extends React.Component<Props, LocalState> {
 const mapStateToProps = (state: State) => ({ token: state.token });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   login: (userId: string, password: string, register: boolean) =>
-    dispatch(requestToken(userId, password, register))
+    dispatch(requestLogin(userId, password, register))
 });
 
 export default connect(

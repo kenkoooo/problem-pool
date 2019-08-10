@@ -1,18 +1,17 @@
 import { Token } from "../common/Token";
-import { SaveData } from "../common/LocalStorage";
 
-export const REQUEST_TOKEN = "REQUEST_TOKEN";
+export const REQUEST_LOGIN = "REQUEST_LOGIN";
 export const RECEIVE_TOKEN = "RECEIVE_TOKEN";
-export const SEND_DATA = "SEND_DATA";
-export const REQUEST_DATA = "REQUEST_DATA";
+export const CLEAR_TOKEN = "CLEAR_TOKEN";
+
 export const RECEIVE_DATA = "RECEIVE_DATA";
 
-export const requestToken = (
+export const requestLogin = (
   userId: string,
   password: string,
   register: boolean
 ) => ({
-  type: REQUEST_TOKEN as typeof REQUEST_TOKEN,
+  type: REQUEST_LOGIN as typeof REQUEST_LOGIN,
   userId,
   password,
   register
@@ -23,25 +22,17 @@ export const receiveToken = (token: Token) => ({
   token
 });
 
-export const sendData = (saveData: SaveData, token: Token) => ({
-  type: SEND_DATA as typeof SEND_DATA,
-  saveData,
-  token
+export const clearToken = () => ({
+  type: CLEAR_TOKEN as typeof CLEAR_TOKEN
 });
 
-export const requestData = (token: Token) => ({
-  type: REQUEST_DATA as typeof REQUEST_DATA,
-  token
-});
-
-export const receiveData = (token: Token, rawData: string) => ({
+export const receiveData = (rawData: string) => ({
   type: RECEIVE_DATA as typeof RECEIVE_DATA,
   rawData
 });
 
 export type PoolApiActionType =
-  | ReturnType<typeof requestToken>
+  | ReturnType<typeof requestLogin>
   | ReturnType<typeof receiveToken>
-  | ReturnType<typeof sendData>
-  | ReturnType<typeof requestData>
+  | ReturnType<typeof clearToken>
   | ReturnType<typeof receiveData>;

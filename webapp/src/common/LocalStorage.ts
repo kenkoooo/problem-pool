@@ -1,7 +1,7 @@
 import { State, UserIds } from "./index";
 import { Map } from "immutable";
 import { PooledTask } from "./PooledTask";
-import { parseToken, Token } from "./Token";
+import { Token } from "./Token";
 
 const LOCAL_STORAGE_KEY = "SAVE_DATA";
 
@@ -14,7 +14,21 @@ export const getSaveData = (): SaveData | undefined => {
   if (item === null) {
     return undefined;
   } else {
-    return JSON.parse(item) as SaveData;
+    return parseSaveData(item);
+  }
+};
+
+export const parseSaveData = (savedString: string): SaveData | undefined => {
+  try {
+    const tmp = JSON.parse(savedString);
+    return {
+      userIds: tmp.userIds,
+      tasks: Map(tmp.tasks),
+      token: tmp.token
+    };
+  } catch (e) {
+    console.error(e);
+    return undefined;
   }
 };
 

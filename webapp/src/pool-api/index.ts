@@ -35,6 +35,6 @@ export const syncPoolData = (token: string, saved_data: string | undefined) => {
 };
 
 export interface SyncResponse {
-  refreshedToken: string;
-  loadedData: string | undefined;
+  readonly refreshedToken: string;
+  readonly loadedData: string | undefined;
 }

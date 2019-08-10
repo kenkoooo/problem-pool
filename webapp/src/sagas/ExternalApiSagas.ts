@@ -1,29 +1,28 @@
-import { all, call, put, select, takeLatest } from "redux-saga/effects";
-import { fetchAtCoderProblems, fetchAtCoderSubmissions } from "./api/AtCoder";
-import {
-  receiveProblems,
-  receiveSubmissions
-} from "./actions/ExternalApiActions";
+import { fetchAtCoderProblems, fetchAtCoderSubmissions } from "../api/AtCoder";
 import {
   fetchCodeforcesProblems,
   fetchCodeforcesSubmissions
-} from "./api/Codeforces";
-import { fetchAOJProblems, fetchAOJSubmissions } from "./api/AOJ";
+} from "../api/Codeforces";
+import { fetchAOJProblems, fetchAOJSubmissions } from "../api/AOJ";
 import {
   fetchYukicoderProblems,
   fetchYukicoderSolvedProblems
-} from "./api/Yukicoder";
-import { State } from "./common";
-import { SAVE_USER_IDS } from "./actions/ConfigActions";
+} from "../api/Yukicoder";
+import { all, call, put, select } from "redux-saga/effects";
+import {
+  receiveProblems,
+  receiveSubmissions
+} from "../actions/ExternalApiActions";
+import { State } from "../common";
 
-function* requestAndRecieveProblems() {
+export function* requestAndReceiveProblems() {
   const fns = [
     fetchAtCoderProblems,
     fetchCodeforcesProblems,
     fetchAOJProblems,
     fetchYukicoderProblems
   ];
-  yield all([
+  yield all(
     fns.map(f =>
       call(function*() {
         try {
@@ -34,10 +33,10 @@ function* requestAndRecieveProblems() {
         }
       })
     )
-  ]);
+  );
 }
 
-function* requestAndReceiveSubmissions() {
+export function* requestAndReceiveSubmissions() {
   const userIds = yield select((state: State) => state.userIds);
   const callers = [
     { f: fetchAtCoderSubmissions, id: userIds.atcoder },
@@ -60,13 +59,3 @@ function* requestAndReceiveSubmissions() {
       )
   );
 }
-
-function* syncSubmissions() {
-  yield takeLatest(SAVE_USER_IDS, requestAndReceiveSubmissions);
-}
-
-function* rootSaga() {
-  yield all([call(requestAndRecieveProblems), call(syncSubmissions)]);
-}
-
-export default rootSaga;

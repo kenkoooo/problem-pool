@@ -8,7 +8,8 @@ export const parseToken = (token: string): Token | undefined => {
     const tokens = token.split(".");
     const { expire_time_second, user_id } = JSON.parse(atob(tokens[1]));
     return { expireTimeSecond: expire_time_second, userId: user_id, token };
-  } catch {
+  } catch (e) {
+    console.error(e);
     return undefined;
   }
 };

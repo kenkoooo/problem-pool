@@ -5,8 +5,6 @@ import {
   Nav,
   Navbar,
   NavbarBrand,
-  NavItem,
-  NavLink,
   UncontrolledDropdown
 } from "reactstrap";
 import * as React from "react";
