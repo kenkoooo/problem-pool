@@ -9,10 +9,10 @@ export const saveState = (state: State) => {
   const saveData = convertToSaveData(state);
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(saveData));
 };
-export const getSaveData = (): SaveData | null => {
+export const getSaveData = (): SaveData | undefined => {
   const item = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (item === null) {
-    return null;
+    return undefined;
   } else {
     return JSON.parse(item) as SaveData;
   }
@@ -21,7 +21,7 @@ export const getSaveData = (): SaveData | null => {
 export interface SaveData {
   readonly tasks: Map<string, PooledTask>;
   readonly userIds: UserIds;
-  readonly token: Token | null;
+  readonly token: Token | undefined;
 }
 
 export const convertToSaveData = ({

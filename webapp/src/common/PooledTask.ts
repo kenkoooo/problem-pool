@@ -1,22 +1,22 @@
 export interface PooledTask {
   readonly key: string;
-  readonly validUrl: string | null;
+  readonly validUrl: string | undefined;
   readonly createdAt: number;
   readonly nextReviewTime: number;
-  readonly lastJudgeAccepted: number | null;
-  readonly lastSolvedByUser: number | null;
+  readonly lastJudgeAccepted: number | undefined;
+  readonly lastSolvedByUser: number | undefined;
 }
 
-export const createTask = (input: string): PooledTask => {
-  const validUrl = isValidUrl(input) ? input : null;
+export const generateTask = (input: string): PooledTask => {
+  const validUrl = isValidUrl(input) ? input : undefined;
   const createdAt = Date.now() / 1000;
   return {
     key: input,
     validUrl,
     createdAt,
     nextReviewTime: createdAt,
-    lastJudgeAccepted: null,
-    lastSolvedByUser: null
+    lastJudgeAccepted: undefined,
+    lastSolvedByUser: undefined
   };
 };
 

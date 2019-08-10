@@ -2,8 +2,8 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import * as React from "react";
 import { Button, FormGroup, Input, Label, Row } from "reactstrap";
-import { saveUsername } from "../actions";
 import { State, UserIds } from "../common";
+import { saveUserIds } from "../actions/ConfigActions";
 
 interface Props {
   readonly save: (userIds: UserIds) => void;
@@ -104,7 +104,7 @@ const mapStateToProps = (state: State) => ({
   userIds: state.userIds
 });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  save: (userIds: UserIds) => dispatch(saveUsername(userIds))
+  save: (userIds: UserIds) => dispatch(saveUserIds(userIds))
 });
 
 export default connect(

@@ -30,7 +30,7 @@ export const fetchYukicoderSolvedProblems = (userId: string) =>
             userId: userId,
             result: "Accepted",
             problemUrl: `https://yukicoder.me/problems/no/${problem.No}`,
-            creationTimeSecond: null
+            creationTimeSecond: undefined
           }))
         )
     );

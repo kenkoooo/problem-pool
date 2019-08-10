@@ -17,7 +17,7 @@ export interface State {
   readonly userIds: UserIds;
   readonly submissions: Map<string, List<Submission>>;
   readonly problems: Map<string, Problem>;
-  readonly token: Token | null;
+  readonly token: Token | undefined;
 }
 
 export const formatDate = (timeSecond: number) => {

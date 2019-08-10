@@ -20,10 +20,10 @@ import { ReviewResult, suggestNextReviewTime } from "../common/Reviewer";
 
 interface Props {
   taskKey: string;
-  url: string | null;
+  url: string | undefined;
   title: string | null;
-  lastJudgeAccepted: number | null;
-  lastSolvedByUser: number | null;
+  lastJudgeAccepted: number | undefined;
+  lastSolvedByUser: number | undefined;
   nextReviewTime: number;
   judge: OnlineJudge | null;
   remove: () => void;
@@ -115,13 +115,13 @@ class ModalCard extends React.Component<Props, LocalState> {
                   )}
                 </tr>
               }
-              {lastSolvedByUser !== null ? (
+              {lastSolvedByUser !== undefined ? (
                 <tr>
                   <th scope="row">Last solved</th>
                   <td>{formatDate(lastSolvedByUser)}</td>
                 </tr>
               ) : null}
-              {lastJudgeAccepted !== null ? (
+              {lastJudgeAccepted !== undefined ? (
                 <tr>
                   <th scope="row">Last accepted</th>
                   <td>{formatDate(lastJudgeAccepted)}</td>

@@ -3,7 +3,7 @@ export type ReviewResult = "Solved" | "Good" | "Hard" | "Failed";
 const daysToSeconds = (days: number) => days * 24 * 3600;
 
 export const suggestNextReviewTime = (
-  lastSolvedTimeSecond: number | null,
+  lastSolvedTimeSecond: number | undefined,
   reviewResult: ReviewResult
 ) => {
   const currentSecond = Date.now() / 1000;

@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import { List, Map } from "immutable";
 import { PooledTask } from "../common/PooledTask";
 import { State } from "../common";
-import { removeTask, solveTask } from "../actions";
 import { Col, Row } from "reactstrap";
 import { Problem, Submission } from "../api";
 import ModalCard from "./ModalCard";
+import { deleteTask, updateTask } from "../actions/TaskActions";
 
 interface Props {
   tasks: Map<string, PooledTask>;
@@ -55,9 +55,9 @@ const mapStateToProps = (state: State) => ({
   problems: state.problems
 });
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  remove: (key: string) => dispatch(removeTask(key)),
+  remove: (key: string) => dispatch(deleteTask(key)),
   solve: (key: string, solvedSecond: number, reviewSecond: number) =>
-    dispatch(solveTask(key, solvedSecond, reviewSecond))
+    dispatch(updateTask(key, solvedSecond, reviewSecond))
 });
 
 export default connect(

@@ -15,13 +15,13 @@ import {
 } from "reactstrap";
 import { State } from "../common";
 import { Dispatch } from "redux";
-import { requestToken } from "../actions";
 import { Redirect } from "react-router";
 import { Token } from "../common/Token";
+import { requestToken } from "../actions/PoolApiActions";
 
 interface Props {
   login: (userId: string, password: string, register: boolean) => void;
-  token: Token | null;
+  token: Token | undefined;
 }
 interface LocalState {
   activeTab: "Login" | "Register";

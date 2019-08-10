@@ -17,7 +17,7 @@ import { isValidToke, Token } from "../common/Token";
 import { Dispatch } from "redux";
 
 interface Props {
-  token: Token | null;
+  token: Token | undefined;
 }
 const NavigationBar = (props: Props) => (
   <Navbar color="light" light expand="md">

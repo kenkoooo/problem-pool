@@ -1,12 +1,12 @@
 import { connect } from "react-redux";
 import { Badge, Col, Input, ListGroup, ListGroupItem, Row } from "reactstrap";
 import * as React from "react";
-import { submitTask } from "../actions";
 import { Dispatch } from "redux";
 import { List, Map } from "immutable";
 import { Problem, Submission } from "../api";
 import { State } from "../common";
 import TodoCards from "../components/TodoCards";
+import { createTask } from "../actions/TaskActions";
 
 interface Props {
   readonly submit: (problem: string) => void;
@@ -137,7 +137,7 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  submit: (problem: string) => dispatch(submitTask(problem))
+  submit: (problem: string) => dispatch(createTask(problem))
 });
 
 export default connect(

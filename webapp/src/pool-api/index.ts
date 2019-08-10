@@ -24,7 +24,10 @@ export const syncPoolData = (token: string, saved_data: string | undefined) => {
   })
     .then(r => r.json())
     .then(
-      (r: { token: string; loaded_data: string | null }): SyncResponse => ({
+      (r: {
+        token: string;
+        loaded_data: string | undefined;
+      }): SyncResponse => ({
         refreshedToken: r.token,
         loadedData: r.loaded_data
       })
@@ -33,5 +36,5 @@ export const syncPoolData = (token: string, saved_data: string | undefined) => {
 
 export interface SyncResponse {
   refreshedToken: string;
-  loadedData: string | null;
+  loadedData: string | undefined;
 }
