@@ -20,7 +20,7 @@ interface Props {
 const NavigationBar = (props: Props) => (
   <Navbar color="light" light expand="md">
     <NavbarBrand tag={RouterLink} to="/">
-      Problem Pool
+      Problem Pool [beta]
     </NavbarBrand>
     <Nav className="ml-auto" navbar>
       <UncontrolledDropdown nav inNavbar>
