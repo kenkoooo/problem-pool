@@ -16,8 +16,14 @@ import { parseSaveData } from "./common/LocalStorage";
 const initialize = (): State => {
   const savedData = LocalStorage.getSaveData();
   if (savedData === undefined) {
+    // TODO remove this line in the future.
+    const item = localStorage.getItem("TASKS");
+    const tasks = item
+      ? Map<string, PooledTask>(JSON.parse(item))
+      : Map<string, PooledTask>();
+
     return {
-      tasks: Map<string, PooledTask>(),
+      tasks: tasks,
       userIds: {
         atcoder: "",
         codeforces: "",
