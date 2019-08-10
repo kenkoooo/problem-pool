@@ -53,7 +53,7 @@ impl Handler<LambdaInput, LambdaOutput, HandlerError> for SyncHandler {
             }
             None => SyncResponse {
                 token: refresh_token(&self.secret_key, &user_id)?,
-                loaded_data: Some(self.client.load_data(&user_id)?),
+                loaded_data: self.client.load_data(&user_id).ok(),
             },
         };
         let mut headers = HashMap::new();
