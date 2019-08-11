@@ -1,7 +1,6 @@
 import { List, Map } from "immutable";
 import { Problem, Submission } from "../api";
 import { PooledTask } from "./PooledTask";
-import { Token } from "./Token";
 
 export type OnlineJudge = "AtCoder" | "Codeforces" | "yukicoder" | "AOJ";
 
@@ -17,7 +16,6 @@ export interface State {
   readonly userIds: UserIds;
   readonly submissions: Map<string, List<Submission>>;
   readonly problems: Map<string, Problem>;
-  readonly token: Token | undefined;
 }
 
 export const formatDate = (timeSecond: number) => {

@@ -1,7 +1,6 @@
 import { State, UserIds } from "./index";
 import { Map } from "immutable";
 import { PooledTask } from "./PooledTask";
-import { Token } from "./Token";
 
 const LOCAL_STORAGE_KEY = "SAVE_DATA";
 
@@ -24,7 +23,6 @@ export const parseSaveData = (savedString: string): SaveData | undefined => {
     return {
       userIds: tmp.userIds,
       tasks: Map(tmp.tasks),
-      token: tmp.token
     };
   } catch (e) {
     console.error(e);
@@ -35,15 +33,9 @@ export const parseSaveData = (savedString: string): SaveData | undefined => {
 export interface SaveData {
   readonly tasks: Map<string, PooledTask>;
   readonly userIds: UserIds;
-  readonly token: Token | undefined;
 }
 
-export const convertToSaveData = ({
+export const convertToSaveData = ({ tasks, userIds }: State): SaveData => ({
   tasks,
-  userIds,
-  token
-}: State): SaveData => ({
-  tasks,
-  userIds,
-  token
+  userIds
 });
