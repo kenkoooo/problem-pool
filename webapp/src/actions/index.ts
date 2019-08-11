@@ -1,12 +1,7 @@
 import { ConfigActionType } from "./ConfigActions";
 import { ExternalApiActionType } from "./ExternalApiActions";
-import { PoolApiActionType } from "./PoolApiActions";
 import { TaskActionType } from "./TaskActions";
 
-type Action =
-  | ConfigActionType
-  | ExternalApiActionType
-  | PoolApiActionType
-  | TaskActionType;
+type Action = ConfigActionType | ExternalApiActionType | TaskActionType;
 
 export default Action;
